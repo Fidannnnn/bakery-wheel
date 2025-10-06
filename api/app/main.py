@@ -69,9 +69,9 @@ app = FastAPI(title="Bakery Wheel API")
 # CORS (dev-friendly): allow explicit origins from .env AND localhost/127.*
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[o.strip() for o in settings.allowed_origins],
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
-    allow_credentials=True,
+    allow_origins=settings.allowed_origins,           # exact list
+    allow_origin_regex=settings.allowed_origin_regex, # regex (e.g. r"^https://.*\.vercel\.app$")
+    allow_credentials=True,                           # ok; you use Authorization header, not cookies
     allow_methods=["*"],
     allow_headers=["*"],
 )

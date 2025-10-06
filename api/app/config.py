@@ -18,12 +18,16 @@ if ENV_PATH.exists():
 class Settings(BaseModel):
     database_url: str = os.getenv("DATABASE_URL", "")
     jwt_secret: str = os.getenv("JWT_SECRET", "dev_change_me")
-    code_expiry_hours: float = float(os.getenv("CODE_EXPIRY_HOURS", "0.01667"))
-    spin_cooldown_hours: float = float(os.getenv("SPIN_COOLDOWN_HOURS", "0.01667"))
-    allowed_origins: list[str] = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+    code_expiry_hours: float = float(os.getenv("CODE_EXPIRY_HOURS", "72"))
+    spin_cooldown_hours: float = float(os.getenv("SPIN_COOLDOWN_HOURS", "72"))
+    allowed_origins: list[str] = [
+        o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o.strip()
+    ]    
+    allowed_origin_regex: str | None = os.getenv("ALLOWED_ORIGIN_REGEX") or None
+
     # NEW:
     admin_password: str = os.getenv("ADMIN_PASSWORD", "raviraIsTheBest")
-    admin_token_hours: int = int(os.getenv("ADMIN_TOKEN_HOURS", "12"))
+    admin_token_hours: int = int(os.getenv("ADMIN_TOKEN_HOURS", "24"))
     admin_password_hash: str = os.getenv("ADMIN_PASSWORD_HASH", "$2b$12$pS0OnyLheo8sb9U983Vr7uyuYpmaw1J248ZBDAxLvCNI6zX6SZeMy")  # bcrypt hash
 
 settings = Settings()
