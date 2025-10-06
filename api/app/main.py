@@ -21,7 +21,7 @@ from .utils import weighted_choice, gen_code, send_reward_email, send_reward_sms
 from jose import jwt, JWTError
 from fastapi import Header, status
 
-from passlib.hash import bcrypt
+import bcrypt, secrets
 
 from pydantic import BaseModel
 
@@ -35,6 +35,22 @@ def make_admin_token() -> str:
     exp = int(utcnow().timestamp()) + settings.admin_token_hours * 3600
     payload = {"role": "admin", "exp": exp}
     return jwt.encode(payload, settings.jwt_secret, algorithm=ALGO)
+
+def verify_admin_password(plaintext: str) -> bool:
+    """
+    Prefer ADMIN_PASSWORD_HASH (bcrypt $2b$...); fall back to ADMIN_PASSWORD (plaintext).
+    """
+    if settings.admin_password_hash:
+        try:
+            return bcrypt.checkpw(
+                plaintext.encode("utf-8"),
+                settings.admin_password_hash.encode("utf-8"),
+            )
+        except Exception:
+            return False
+    if settings.admin_password:
+        return secrets.compare_digest(plaintext, settings.admin_password)
+    return False
 
 def require_admin(authorization: str | None = Header(default=None, alias="Authorization")):
     if not authorization or not authorization.startswith("Bearer "):
@@ -388,11 +404,7 @@ def admin_login(body: AdminLoginRequest, request: Request):
     ip = request.client.host if request.client else "unknown"
     _rate_limit(ip)
 
-    if not settings.admin_password_hash:
-        # Safety: refuse to run without a configured hash
-        raise HTTPException(status_code=500, detail="Admin password not configured")
-
-    if not bcrypt.verify(body.password, settings.admin_password_hash):
+    if not verify_admin_password(body.password):
         _mark_fail(ip)
         raise HTTPException(status_code=401, detail="Wrong password")
 
@@ -566,8 +578,7 @@ def admin_redemptions(db: Session = Depends(get_db), _=Depends(require_admin)):
             "code": code.code,
             "prize_name": prize.name if prize else None,
             "redeemed_at": (code.redeemed_at.replace(tzinfo=timezone.utc) if code.redeemed_at and code.redeemed_at.tzinfo is None else code.redeemed_at),
-            "user_first_name": user.first_name,
-            "user_last_name": user.last_name,
+            "user_name": user.full_name,
             "user_phone": user.phone,
         })
     return out
