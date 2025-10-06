@@ -1,27 +1,90 @@
-﻿// web/lib/api.ts
-export async function apiPost<T>(
-  path: string,
-  body: any,
-  opts?: { admin?: boolean }
-): Promise<T> {
-  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
+﻿type ApiOptions = {
+  admin?: boolean;                  // if true, attach Authorization: Bearer <bw_admin_token>
+  token?: string;                   // override token (useful in SSR)
+  method?: 'GET'|'POST'|'PUT'|'PATCH'|'DELETE';
+  headers?: Record<string, string>;
+  query?: Record<string, string | number | boolean | undefined>;
+};
 
-  // Attach admin JWT if requested
-  if (opts?.admin && typeof window !== "undefined") {
-    const t = localStorage.getItem("bw_admin_token");
-    if (t) headers["Authorization"] = `Bearer ${t}`;
+// Build base URL (prod must have NEXT_PUBLIC_API_URL)
+function getBase(): string {
+  const raw = process.env.NEXT_PUBLIC_API_URL;
+  if (raw && raw.trim()) return raw.replace(/\/$/, '');
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Missing NEXT_PUBLIC_API_URL in production');
+  }
+  return 'http://localhost:8000';
+}
+
+function withQuery(path: string, query?: ApiOptions['query']): string {
+  if (!query) return path;
+  const params = new URLSearchParams();
+  for (const [k, v] of Object.entries(query)) {
+    if (v === undefined || v === null) continue;
+    params.set(k, String(v));
+  }
+  const qs = params.toString();
+  return qs ? `${path}?${qs}` : path;
+}
+
+function getAdminToken(opts?: ApiOptions): string | null {
+  if (opts?.token) return opts.token;
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('bw_admin_token');
+  }
+  return null; // SSR has no localStorage
+}
+
+async function apiFetch<T>(
+  path: string,
+  body?: any,
+  opts: ApiOptions = {}
+): Promise<T> {
+  const base = getBase();
+  const method = opts.method ?? (body === undefined ? 'GET' : 'POST');
+
+  // normalize path
+  const safePath = path.startsWith('/') ? path : `/${path}`;
+  const url = `${base}${withQuery(safePath, opts.query)}`;
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(opts.headers || {}),
+  };
+
+  if (opts.admin) {
+    const token = getAdminToken(opts);
+    if (!token) throw new Error('Missing admin token. Please login again.');
+    headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetch(`${base}${path}`, {
-    method: "POST",
+  const res = await fetch(url, {
+    method,
     headers,
-    body: JSON.stringify(body ?? {}),
+    body: method === 'GET' ? undefined : JSON.stringify(body ?? {}),
   });
 
+  // Try to parse error payloads cleanly
   if (!res.ok) {
-    const detail = await res.json().catch(() => ({}));
-    throw new Error(detail?.detail || detail?.message || `Request failed: ${res.status}`);
+    const text = await res.text().catch(() => '');
+    try {
+      const json = text ? JSON.parse(text) : {};
+      throw new Error(json.detail || json.message || `Request failed: ${res.status}`);
+    } catch {
+      throw new Error(text || `Request failed: ${res.status}`);
+    }
   }
+
+  // Some endpoints might return 204
+  if (res.status === 204) return undefined as unknown as T;
+
   return res.json() as Promise<T>;
+}
+
+export async function apiGet<T>(path: string, opts: ApiOptions = {}) {
+  return apiFetch<T>(path, undefined, { ...opts, method: 'GET' });
+}
+
+export async function apiPost<T>(path: string, body?: any, opts: ApiOptions = {}) {
+  return apiFetch<T>(path, body, { ...opts, method: 'POST' });
 }

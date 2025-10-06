@@ -1,12 +1,13 @@
-// web/next.config.ts
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 const nextConfig: NextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true, // ✅ don't fail the build on ESLint errors
+  async rewrites() {
+    return [
+      { source: '/api/:path*', destination: `${API_BASE}/api/:path*` },
+    ];
   },
-  // If type errors ever block builds, you can temporarily enable:
-  // typescript: { ignoreBuildErrors: true },
 };
 
 export default nextConfig;
