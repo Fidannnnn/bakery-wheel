@@ -2,6 +2,7 @@
 'use client';
 
 import type React from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { validatePhone, normalizePhone } from '@/lib/validation';
@@ -107,7 +108,7 @@ export default function LoginClient({ next }: { next: string }) {
             >
               {loading ? 'Please wait…' : 'Continue'}
             </button>
-            <a href="/" style={btnGhost as React.CSSProperties}>Back</a>
+            <Link href="/" style={btnGhost as React.CSSProperties}>Back</Link>
           </div>
 
           <small style={{ color: '#6b7280' }}>
