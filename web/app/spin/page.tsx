@@ -158,7 +158,7 @@ export default function Page() {
     const mid = k * slice + slice / 2;
 
     // pick where your pointer lives: top = 270°, bottom = 180°
-    const POINTER_DEG = 270;   // ← set to 180 if you want the pointer at bottom
+    const POINTER_DEG = 180;   // ← set to 180 if you want the pointer at bottom
     const TURNS = 6;           // full extra turns for drama
 
     const current = norm(wheelAngle);
@@ -418,13 +418,13 @@ const wheelWrap: React.CSSProperties = {
 const pointer: React.CSSProperties = {
   position: "absolute",
   left: "50%",
-  top: "-22px",                 // sit just outside the rim
-  transform: "translateX(-50%) rotate(180deg)",
+  bottom: "-22px",                 // sit just outside the rim
+  transform: "translateX(-50%)",
   width: 0,
   height: 0,
   borderLeft: "18px solid transparent",
   borderRight: "18px solid transparent",
-  borderTop: "28px solid #b24a3b", // arrow color
+  borderBottom: "28px solid #b24a3b", // arrow color
   filter: "drop-shadow(0 6px 10px rgba(0,0,0,.18))",
   zIndex: 4,                    // on top of everything
 };
