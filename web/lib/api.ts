@@ -1,4 +1,5 @@
-﻿type ApiOptions = {
+﻿// web/lib/api.ts
+type ApiOptions = {
   admin?: boolean;
   token?: string;
   method?: 'GET'|'POST'|'PUT'|'PATCH'|'DELETE';

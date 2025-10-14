@@ -1,3 +1,4 @@
+// web/components/ui.tsx
 export function Card(props:{children:any, header?:string, footer?:any}) {
   return (
     <div className="card">

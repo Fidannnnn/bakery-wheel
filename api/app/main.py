@@ -186,6 +186,15 @@ def spin(payload: SpinRequest, db: Session = Depends(get_db)):
             exp = exp.replace(tzinfo=timezone.utc)
         if exp and exp > now:
             p = db.query(Prize).filter(Prize.id == latest_code.prize_id).first()
+            active_prizes = (
+                db.query(Prize)
+                .filter(Prize.active == True)
+                .order_by(Prize.id.asc())
+                .all()
+            )
+            order_ids = [x.id for x in active_prizes]
+            wedge_index = order_ids.index(p.id) if p and p.id in order_ids else None
+
             return SpinResponse(
                 status="existing_active",
                 message="You already spun — here’s your code.",
@@ -194,7 +203,12 @@ def spin(payload: SpinRequest, db: Session = Depends(get_db)):
                 prize_value=p.value if p else None,
                 code=latest_code.code,
                 expires_at=exp,
+                # NEW ↓↓↓
+                prize_id=p.id if p else None,
+                wedge_index=wedge_index,
+                wedges_count=len(order_ids),
             )
+
 
     # 2) If last code is redeemed → tell them when; then apply cooldown gate.
     if latest_code and latest_code.status == "redeemed":
@@ -275,19 +289,30 @@ def spin(payload: SpinRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Could not generate a unique code, please try again.")
 
 
-    # If you’re fully dropping SMS, comment this out:
-    # if user.phone:
-    #     send_reward_sms(user.phone, code_obj.code, iso, prize.name)
+    # Determine the wheel position (index) for the drawn prize
+    active_prizes = (
+        db.query(Prize)
+        .filter(Prize.active == True)
+        .order_by(Prize.id.asc())
+        .all()
+    )
+    order_ids = [p.id for p in active_prizes]
+    wedge_index = order_ids.index(prize.id) if prize.id in order_ids else None
+    wedges_count = len(order_ids)
 
     return SpinResponse(
-        status="new",
-        message="Here’s your reward code!",
-        prize_name=prize.name,
-        prize_type=prize.type,
-        prize_value=prize.value,
-        code=code_obj.code,
-        expires_at=expires_at,
-    )
+    status="new",
+    message="Here’s your reward code!",
+    prize_name=prize.name,
+    prize_type=prize.type,
+    prize_value=prize.value,
+    code=code_obj.code,
+    expires_at=expires_at,
+    prize_id=prize.id,
+    wedge_index=wedge_index,
+    wedges_count=wedges_count,
+)
+
 
 # Replace your existing /api/redeem with this admin-protected version:
 @app.post("/api/admin/redeem", response_model=RedeemResponse)

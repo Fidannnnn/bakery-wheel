@@ -1,3 +1,4 @@
+// web/components/AdminLogout.tsx
 'use client';
 import { useEffect, useState } from 'react';
 export default function AdminLogout() {

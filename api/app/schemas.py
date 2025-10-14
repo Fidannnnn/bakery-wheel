@@ -17,6 +17,9 @@ class SpinResponse(BaseModel):
     expires_at: Optional[datetime] = None
     redeemed_at: Optional[datetime] = None
     next_spin_at: Optional[datetime] = None
+    prize_id: Optional[int] = None
+    wedge_index: Optional[int] = None
+    wedges_count: Optional[int] = None
 
 class RedeemRequest(BaseModel):
     code: str

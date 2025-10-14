@@ -1,3 +1,4 @@
+// web/app/spin/page.tsx
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -140,34 +141,34 @@ export default function Page() {
     });
     setResult(r);
 
-    // 2) Find the wedge that matches the server result
-    const target =
-      (r as any).prize_id != null
-        ? wedges.find(w => w.id === (r as any).prize_id)
-        : wedges.find(
-            w =>
-              (w.name ?? "").trim().toLowerCase() ===
-              (r.prize_name ?? "").trim().toLowerCase()
-          );
+    // 2) Server tells us the exact wedge index
+    const k = (r as any).wedge_index as number | undefined;
+    const count = (r as any).wedges_count as number | undefined;
 
-    if (!target) {
-      // fallback: small spin so user sees something
+    const n = count && count > 0 ? count : wedges.length;
+    if (typeof k !== "number" || n <= 0) {
+      // graceful fallback so the user still sees movement
       setWheelAngle(p => p + 360);
       setTimeout(() => setLoading(false), SPIN_MS);
       return;
     }
 
-    // 3) Rotate so target.mid ends under the bottom pointer
-    const POINTER_DEG = 180;     // bottom in CSS polar coords
-    const CAL = 0;               // tweak ±2–6 if your pointer art needs offset
-    const TURNS = 5;             // visual extra spins
+    // 3) Rotate so the center of slice k aligns with the pointer
+    const slice = 360 / n;
+    const mid = k * slice + slice / 2;
+
+    // pick where your pointer lives: top = 270°, bottom = 180°
+    const POINTER_DEG = 270;   // ← set to 180 if you want the pointer at bottom
+    const TURNS = 6;           // full extra turns for drama
 
     const current = norm(wheelAngle);
-    const targetStop = norm(POINTER_DEG - target.mid + CAL); // mid + A ≡ 270
-    const delta = norm(targetStop - current);                 // shortest positive move
+    const targetStop = norm(POINTER_DEG - mid);
+    const rawDelta = norm(targetStop - current);
+    const delta = rawDelta < 20 ? rawDelta + 360 : rawDelta; // avoid micro-spin
 
     setWheelAngle(p => p + TURNS * 360 + delta);
-    setTimeout(() => setLoading(false), SPIN_MS + 100);
+    setTimeout(() => setLoading(false), SPIN_MS + 80);
+
   } catch (e: any) {
     setError(e.message || "Failed to spin");
     setLoading(false);
@@ -208,49 +209,31 @@ export default function Page() {
 
 // build wedges (CSS basis: 0° = right, clockwise)
 const palette = ["#ffd1c1","#ffe6a7","#c2e8ce","#d8d3ff","#ffc2cc","#fbe0a0","#c7efd8","#e3ddff","#ffd8cd","#f7edc9"];
-const totalWeight = prizes.reduce((a, p) => a + Math.max(0, p.weight || 0), 0);
-const wedgeCount = prizes.length || 8;
 
 let gradient = "";
 let labels: Array<{ text: string; mid: number }> = [];
 let wedges: Array<{ id?: number; name: string; start: number; end: number; mid: number }> = [];
 
-if (prizes.length && totalWeight > 0) {
-  let at = 0;                         // 0° = right
-  const segs: string[] = [];
-  prizes.forEach((p, i) => {
-    const frac = Math.max(0, p.weight || 0) / totalWeight;
-    const deg = frac * 360;           // no artificial min; labels match slices exactly
-    if (deg <= 0) return;             // skip zero-weight slices entirely
-    const end = at + deg;
-    const mid = at + deg / 2;
-    const color = palette[i % palette.length];
+// ── equal wedges: one prize per slice (order == /api/prizes) ───────────────
+const n = prizes.length || 8;             // fallback to 8 placeholders if none yet
+const seg = 360 / n;
+let at = 0;
+const segs: string[] = [];
 
-    segs.push(`${color} ${at}deg ${end}deg`);
-    labels.push({ text: p.name, mid });
-    wedges.push({ id: p.id, name: p.name, start: at, end, mid });
+for (let i = 0; i < n; i++) {
+  const end = at + seg;
+  const mid = at + seg / 2;
+  const color = palette[i % palette.length];
+  const id = prizes[i]?.id;
+  const name = prizes[i]?.name ?? "Prize";   // Azeri labels: set in Admin → Name
 
-    at = end;
-  });
-  gradient = `conic-gradient(from 0deg, ${segs.join(",")})`;
-} else {
-  const seg = 360 / wedgeCount;
-  let at = 0;
-  const segs: string[] = [];
-  for (let i = 0; i < wedgeCount; i++) {
-    const end = at + seg;
-    const mid = at + seg / 2;
-    const color = palette[i % palette.length];
-    segs.push(`${color} ${at}deg ${end}deg`);
-    labels.push({ text: "Prize", mid });
-    wedges.push({ name: "Prize", start: at, end, mid });
-    at = end;
-  }
-  gradient = `conic-gradient(from 0deg, ${segs.join(",")})`;
+  segs.push(`${color} ${at}deg ${end}deg`);
+  labels.push({ text: name, mid });
+  wedges.push({ id, name, start: at, end, mid });
+
+  at = end;
 }
-
-
-
+gradient = `conic-gradient(from 0deg, ${segs.join(",")})`;
 
   // ---- UI ----
   return (
@@ -435,13 +418,13 @@ const wheelWrap: React.CSSProperties = {
 const pointer: React.CSSProperties = {
   position: "absolute",
   left: "50%",
-  bottom: "-22px",                 // sit just outside the rim
-  transform: "translateX(-50%)",
+  top: "-22px",                 // sit just outside the rim
+  transform: "translateX(-50%) rotate(180deg)",
   width: 0,
   height: 0,
   borderLeft: "18px solid transparent",
   borderRight: "18px solid transparent",
-  borderBottom: "28px solid #b24a3b", // arrow color
+  borderTop: "28px solid #b24a3b", // arrow color
   filter: "drop-shadow(0 6px 10px rgba(0,0,0,.18))",
   zIndex: 4,                    // on top of everything
 };

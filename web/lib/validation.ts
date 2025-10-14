@@ -1,3 +1,4 @@
+// web/lib/validation.ts
 export function validateEmail(email: string): { ok: boolean; reason?: string } {
   const v = email.trim();
   if (!v) return { ok: false, reason: "Email is required" };
