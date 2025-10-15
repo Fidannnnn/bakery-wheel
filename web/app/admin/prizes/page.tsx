@@ -10,8 +10,21 @@ type Prize = {
   value?: string | null;
   weight: number;
   active: boolean;
-  icon_url?: string | null;
+  icon_type?: string | null;
 };
+
+const ICON_OPTIONS = [
+  { value: "", label: "(none)" },
+  { value: "donut", label: "Donut" },
+  { value: "coffee", label: "Coffee" },
+  { value: "croissant", label: "Croissant" },
+  { value: "cake", label: "Cake" },
+  { value: "cookie", label: "Cookie" },
+  { value: "percent", label: "Percent" },
+  { value: "gift", label: "Gift" },
+  { value: "star", label: "Star" },
+];
+
 
 // UI row with a stable key
 type PrizeUI = Prize & { uid: string };
@@ -51,9 +64,10 @@ export default function AdminPrizesPage() {
   function addRow() {
     setRows(v => [
       ...v,
-      { uid: newUid(), name: "", type: "other", value: "", weight: 0, active: false }, // not auto-selected
+      { uid: newUid(), name: "", type: "other", value: "", weight: 0, active: false, icon_type: null },
     ]);
   }
+
 
   // add this near other state
 const [busyId, setBusyId] = useState<string | null>(null);
@@ -164,7 +178,7 @@ async function removeRow(uid: string) {
               <th style={th}>Type</th>
               <th style={th}>Value</th>
               <th style={th}>Weight (likelihood)</th>
-              <th style={th}>Icon URL</th>
+              <th style={th}>Icon</th>
               <th style={th}></th>
             </tr>
           </thead>
@@ -212,12 +226,16 @@ async function removeRow(uid: string) {
                   />
                 </td>
                 <td style={td}>
-                  <input
-                    value={r.icon_url ?? ""}
-                    onChange={e => update(r.uid, { icon_url: e.target.value })}
-                    placeholder="https://…/icon.png"
-                  />
+                  <select
+                    value={r.icon_type ?? ""}
+                    onChange={e => update(r.uid, { icon_type: e.target.value || null })}
+                  >
+                    {ICON_OPTIONS.map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
                 </td>
+
                 <td style={td}>
                   <button onClick={() => removeRow(r.uid)} disabled={busyId === r.uid}>
                     {busyId === r.uid ? "Removing…" : "Remove"}
@@ -227,7 +245,7 @@ async function removeRow(uid: string) {
             ))}
             {!rows.length && (
               <tr>
-                <td colSpan={6} style={{padding:12,opacity:0.7}}>
+                <td colSpan={7} style={{padding:12,opacity:0.7}}>
                   No prizes yet. Click “Add prize”.
                 </td>
               </tr>
