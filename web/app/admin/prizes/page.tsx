@@ -64,7 +64,7 @@ export default function AdminPrizesPage() {
   function addRow() {
     setRows(v => [
       ...v,
-      { uid: newUid(), name: "", type: "other", value: "", weight: 0, active: false, icon_type: null },
+      { uid: newUid(), name: "", type: "other", value: "", weight: 0, active: true, icon_type: null },
     ]);
   }
 

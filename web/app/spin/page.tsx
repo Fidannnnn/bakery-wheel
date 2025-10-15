@@ -271,12 +271,12 @@ for (let i = 0; i < n; i++) {
   const mid = at + seg / 2;
   const color = palette[i % palette.length];
   const id = prizes[i]?.id;
-  const iconUrl = (prizes[i] as any)?.icon_url || (prizes[i] as any)?.iconUrl || null;
+  const iconType = (prizes[i] as any)?.icon_type || null;
   const name = prizes[i]?.name ?? "Prize";   
 
   segs.push(`${color} ${at}deg ${end}deg`);
   labels.push({ text: name, mid });
-  wedges.push({ id, name, start: at, end, mid, iconUrl } as any);
+  wedges.push({ id, name, start: at, end, mid, iconType } as any);
 
   at = end;
 }

@@ -536,22 +536,27 @@ def admin_set_prizes(payload: PrizesSetRequest, db: Session = Depends(get_db), _
 
     # Update existing that are in payload
     for pid, pin in incoming_by_id.items():
-        if pid not in existing_by_id:
-            raise HTTPException(status_code=404, detail=f"Prize id {pid} not found.")
-        e = existing_by_id[pid]
-        e.name   = pin.name
-        e.type   = pin.type
-        e.value  = pin.value
-        e.weight = pin.weight
-        e.active = pin.active
-        e.icon_type = e.icon_type 
+        ...
+        e.name      = pin.name
+        e.type      = pin.type
+        e.value     = pin.value
+        e.weight    = pin.weight
+        e.active    = pin.active
+        e.icon_type = pin.icon_type          # ← add
         updated += 1
 
-    # Create new
     for pin in incoming_new:
-        e = Prize(name=pin.name, type=pin.type, value=pin.value, weight=pin.weight, active=pin.active)
+        e = Prize(
+            name=pin.name,
+            type=pin.type,
+            value=pin.value,
+            weight=pin.weight,
+            active=pin.active,
+            icon_type=pin.icon_type,         # ← add
+        )
         db.add(e)
         created += 1
+
 
     db.flush()  # get new ids if needed
 
