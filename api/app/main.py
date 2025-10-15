@@ -544,6 +544,7 @@ def admin_set_prizes(payload: PrizesSetRequest, db: Session = Depends(get_db), _
         e.value  = pin.value
         e.weight = pin.weight
         e.active = pin.active
+        e.icon_type = e.icon_type 
         updated += 1
 
     # Create new
