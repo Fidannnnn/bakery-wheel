@@ -30,6 +30,26 @@ const norm = (x: number) => ((x % 360) + 360) % 360;
 
 const POINTER_DEG = 270;
 
+// simple donut fallback (inline SVG as data URI)
+const FALLBACK_ICON =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+  <defs>
+    <radialGradient id="g" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="#fff4e6"/>
+      <stop offset="100%" stop-color="#ffd4c7"/>
+    </radialGradient>
+  </defs>
+  <circle cx="20" cy="20" r="18" fill="url(#g)" stroke="#e9b8a7" stroke-width="2"/>
+  <circle cx="20" cy="20" r="7" fill="#fffaf3" stroke="#f0d6cb" stroke-width="2"/>
+  <circle cx="12" cy="12" r="2" fill="#f58b7a"/>
+  <circle cx="26" cy="10" r="2" fill="#a68cf0"/>
+  <circle cx="30" cy="22" r="2" fill="#7cc9a5"/>
+  <circle cx="14" cy="28" r="2" fill="#ffc34d"/>
+</svg>`);
+
+
 function validateName(name: string) {
     const n = name.trim();
     if (!n || n.length < 2) return { ok: false, reason: "Name looks too short." };
@@ -46,6 +66,28 @@ function angleForMid(mid: number, currentAngle: number) {
   const turns = 360 * 5;                       // visual extra spins
   return currentAngle + turns + delta;
 }
+
+function SliceIcon({ src }: { src?: string | null }) {
+  const [url, setUrl] = useState<string | null>(src || null);
+  return (
+    <img
+      src={url || FALLBACK_ICON}
+      alt=""
+      width={40}
+      height={40}
+      loading="lazy"
+      onError={() => setUrl(FALLBACK_ICON)}
+      style={{
+        width: 40, height: 40, objectFit: "contain",
+        marginBottom: 6,
+        filter: "drop-shadow(0 1px 1px rgba(0,0,0,.12))",
+        pointerEvents: "none",
+        userSelect: "none",
+      }}
+    />
+  );
+}
+
 
 export default function Page() {
   const router = useRouter();
@@ -209,6 +251,16 @@ export default function Page() {
 
 // build wedges (CSS basis: 0° = right, clockwise)
 const palette = ["#ffd1c1","#ffe6a7","#c2e8ce","#d8d3ff","#ffc2cc","#fbe0a0","#c7efd8","#e3ddff","#ffd8cd","#f7edc9"];
+const BAKERY_PALETTE = [
+  "#F8D8C6", // soft peach
+  "#F9E5B9", // warm vanilla
+  "#CDE8D5", // mint cream
+  "#E4DAFF", // lilac glaze
+  "#FFC7D1", // strawberry frosting
+  "#FBE4B7", // honey butter
+  "#D3F0E3", // pistachio cream
+  "#EDE6FF", // lavender sugar
+];
 
 let gradient = "";
 let labels: Array<{ text: string; mid: number }> = [];
@@ -225,11 +277,12 @@ for (let i = 0; i < n; i++) {
   const mid = at + seg / 2;
   const color = palette[i % palette.length];
   const id = prizes[i]?.id;
-  const name = prizes[i]?.name ?? "Prize";   // Azeri labels: set in Admin → Name
+  const iconUrl = (prizes[i] as any)?.icon_url || (prizes[i] as any)?.iconUrl || null;
+  const name = prizes[i]?.name ?? "Prize";   
 
   segs.push(`${color} ${at}deg ${end}deg`);
   labels.push({ text: name, mid });
-  wedges.push({ id, name, start: at, end, mid });
+  wedges.push({ id, name, start: at, end, mid, iconUrl } as any);
 
   at = end;
 }
@@ -282,16 +335,17 @@ gradient = `conic-gradient(from 0deg, ${segs.join(",")})`;
                     }}
                     title={l.text}
                   >
+                  <SliceIcon src={(wedges[idx] as any)?.iconUrl} />
                     <span style={labelChip}>{l.text}</span>
                   </div>
                 </div>
               ))}
 
-  <div style={hub} />
-</div>
+              <div style={hub} />
+            </div>
           </div>
 
-          <div style={ctaCol}>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
             <button
               onClick={spin}
               disabled={loading || hasActive}

@@ -70,6 +70,7 @@ class PrizeIn(BaseModel):
     value: Optional[str] = None  
     weight: int = Field(ge=0, default=0)
     active: bool = True
+    icon_url: Optional[str] = None
 
 class PrizeOut(BaseModel):
     id: int
@@ -78,6 +79,7 @@ class PrizeOut(BaseModel):
     value: Optional[str] = None
     weight: int
     active: bool
+    icon_url: Optional[str] = None
     class Config:
         from_attributes = True
 

@@ -22,6 +22,7 @@ class Prize(Base):
     value: Mapped[str | None] = mapped_column(String, nullable=True)
     weight: Mapped[int] = mapped_column(Integer, default=1)
     active: Mapped[bool] = mapped_column(Boolean, default=True)
+    icon_url: Mapped[str | None] = mapped_column(String, nullable=True)
 
 class Spin(Base):
     __tablename__ = "spins"

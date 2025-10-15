@@ -10,6 +10,7 @@ type Prize = {
   value?: string | null;
   weight: number;
   active: boolean;
+  icon_url?: string | null;
 };
 
 // UI row with a stable key
@@ -163,6 +164,7 @@ async function removeRow(uid: string) {
               <th style={th}>Type</th>
               <th style={th}>Value</th>
               <th style={th}>Weight (likelihood)</th>
+              <th style={th}>Icon URL</th>
               <th style={th}></th>
             </tr>
           </thead>
@@ -207,6 +209,13 @@ async function removeRow(uid: string) {
                       const n = parseInt(e.target.value || "0", 10);
                       update(r.uid, { weight: Number.isNaN(n) ? 0 : n });
                     }}
+                  />
+                </td>
+                <td style={td}>
+                  <input
+                    value={r.icon_url ?? ""}
+                    onChange={e => update(r.uid, { icon_url: e.target.value })}
+                    placeholder="https://…/icon.png"
                   />
                 </td>
                 <td style={td}>
