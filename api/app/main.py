@@ -536,13 +536,17 @@ def admin_set_prizes(payload: PrizesSetRequest, db: Session = Depends(get_db), _
 
     # Update existing that are in payload
     for pid, pin in incoming_by_id.items():
-        ...
+        e = existing_by_id.get(pid)
+        if not e:
+            # if someone sent an id that doesn't exist, skip or raise
+            continue
+
         e.name      = pin.name
         e.type      = pin.type
         e.value     = pin.value
         e.weight    = pin.weight
         e.active    = pin.active
-        e.icon_type = pin.icon_type          # ← add
+        e.icon_type = pin.icon_type
         updated += 1
 
     for pin in incoming_new:
@@ -619,6 +623,7 @@ class PrizePublic(BaseModel):
     name: str
     value: Optional[str] = None
     weight: int
+    icon_type: Optional[str] = None
     class Config:
         from_attributes = True
 
