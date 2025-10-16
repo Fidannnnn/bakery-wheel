@@ -321,29 +321,36 @@ gradient = `conic-gradient(from 0deg, ${segs.join(",")})`;
                     transform: `rotate(${l.mid}deg)`,
                   }}
                 >
-                  <div
-                    style={{
-                      ...labelAtTop,
-                      // keep the text upright: undo spinLayer + labelRing + 90° offset
-                      transform: `translateX(-50%) rotate(${-(wheelAngle + l.mid)}deg)`,
-                    }}
-                    title={l.text}
-                  >
-                  {/* ICON from built-in set */}
-                <img
-                  src={iconFor((wedges[idx] as any)?.iconType)}
-                  alt=""
-                  width={40}
-                  height={40}
-                  loading="lazy"
-                  style={{
-                    width: 40, height: 40, objectFit: "contain",
-                    marginBottom: 6, filter: "drop-shadow(0 1px 1px rgba(0,0,0,.12))",
-                    pointerEvents: "none", userSelect: "none",
-                  }}
-                />
+                  
+                <div
+  style={{
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    transform: `translateX(-50%) rotate(${-(wheelAngle + l.mid)}deg)`,
+  }}
+  title={l.text}
+>
+  {(wedges[idx] as any)?.iconType && (
+    <img
+      src={iconFor((wedges[idx] as any)?.iconType)} // your helper or path
+      alt=""
+      style={{
+        width: 42,
+        height: 42,
+        objectFit: "contain",
+        marginBottom: 4,               // 👈 space between icon & text
+        pointerEvents: "none",
+        filter: "drop-shadow(0 1px 1px rgba(0,0,0,.15))",
+      }}
+    />
+  )}
+  <span style={labelChip}>{l.text ?? "Hədiyyə"}</span>
+</div>
 
-                  </div>
+
+                  
                 </div>
               ))}
 
@@ -486,7 +493,7 @@ const pointer: React.CSSProperties = {
   borderRight: "18px solid transparent",
   borderBottom: "28px solid #b24a3b", // arrow color
   filter: "drop-shadow(0 6px 10px rgba(0,0,0,.18))",
-  zIndex: 4,                    // on top of everything
+  zIndex: 6,                    // on top of everything
 };
 
 const wheelBase: React.CSSProperties = {
@@ -538,7 +545,9 @@ const labelChip: React.CSSProperties = {
   // IMPORTANT: allow wrapping — remove the truncation props you had before
   whiteSpace: "normal",
   wordBreak: "break-word",
+  position: "relative",
   textWrap: "balance" as any,   // optional; helps multi-line look nicer
+  zIndex: 5,
 };
 
 const ctaCol: React.CSSProperties = {
