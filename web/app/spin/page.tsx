@@ -1,5 +1,6 @@
 // web/app/spin/page.tsx
 "use client";
+export const dynamic = 'force-dynamic'; 
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -27,8 +28,6 @@ const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 type Wedge = { id?: number; name: string; start: number; end: number; mid: number };
 
 const norm = (x: number) => ((x % 360) + 360) % 360;
-
-const [upright, setUpright] = useState(true);
 
 const POINTER_DEG = 270;
 
@@ -97,6 +96,7 @@ export default function Page() {
   const [error, setError]       = useState<string | null>(null);
   const [loading, setLoading]   = useState(false);
   const [copied, setCopied]     = useState(false);
+  const [upright, setUpright] = useState(true);
 
   const [now, setNow]           = useState<number>(Date.now());
   const tickRef = useRef<number | null>(null);
