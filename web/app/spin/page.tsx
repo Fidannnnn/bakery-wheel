@@ -315,32 +315,24 @@ gradient = `conic-gradient(from 0deg, ${segs.join(",")})`;
             >
               <div style={{ ...wheelBase, background: gradient }} />
 
-{/* labels/icons, positioned from the CENTER and attached to slices */}
+{/* labels/icons, attached to slices via full-size ring */}
 {labels.map((l, idx) => {
-  // If upright === true, counter-rotate by -(wheelAngle + l.mid) to face up.
-  // If upright === false (spinning), don't counter-rotate -> they spin with the slice.
+  // If upright === true, counter-rotate so text faces up after the spin.
+  // If upright === false, let them spin with the wheel.
   const innerRotate = upright ? (-(wheelAngle + l.mid)) : 0;
 
   return (
     <div
       key={idx}
       style={{
-        position: "absolute",
-        left: "50%",
-        top: "50%",
-        // 1) center the anchor
-        // 2) rotate to the slice center
-        // 3) move outward along the radius
-        transform: `translate(-50%, -50%) rotate(${l.mid}deg) translateY(-46%)`,
-        transformOrigin: "50% 50%",
-        pointerEvents: "none",
-        zIndex: 3,
+        ...labelRing,                      // <- full-size ring (inset: 0)
+        transform: `rotate(${l.mid}deg)`,  // rotate ring to the slice center
       }}
     >
       <div
         style={{
-          transform: `rotate(${innerRotate}deg)`,
-          transition: upright ? "transform .25s ease-out" : "none",
+          ...labelAtTop,                   // <- anchored by top: % relative to WHEEL
+          transform: `translateX(-50%) rotate(${innerRotate}deg)`,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -351,8 +343,6 @@ gradient = `conic-gradient(from 0deg, ${segs.join(",")})`;
         <img
           src={iconFor((wedges[idx] as any)?.iconType)}
           alt=""
-          width={36}
-          height={36}
           style={{
             width: 36,
             height: 36,
@@ -368,8 +358,6 @@ gradient = `conic-gradient(from 0deg, ${segs.join(",")})`;
     </div>
   );
 })}
-
-
 
               <div style={hub} />
             </div>
@@ -661,8 +649,3 @@ const labelAtTop: React.CSSProperties = {
   display: "grid",
   placeItems: "center",
 };
-
-
-
-
-
