@@ -28,6 +28,8 @@ type Wedge = { id?: number; name: string; start: number; end: number; mid: numbe
 
 const norm = (x: number) => ((x % 360) + 360) % 360;
 
+const [upright, setUpright] = useState(true);
+
 const POINTER_DEG = 270;
 
 // simple donut fallback (inline SVG as data URI)
@@ -137,7 +139,7 @@ export default function Page() {
   }, []);
 
   // preload current status
-  useEffect(() => { if (mounted && haveCreds) refreshStatus(); }, [mounted, haveCreds, fullName, phone]);
+  useEffect(() => { if (mounted && haveCreds) {setUpright(true);refreshStatus();} }, [mounted, haveCreds, fullName, phone]);
 
   async function refreshStatus() {
     if (!phone) return;
@@ -167,6 +169,7 @@ export default function Page() {
 
   const SPIN_MS = 3200;
   setLoading(true); // enables the long CSS transition
+  setUpright(false); // let labels spin with the wheel
 
   try {
     // 1) Ask server which prize we got
@@ -185,7 +188,7 @@ export default function Page() {
     if (typeof k !== "number" || n <= 0) {
       // graceful fallback so the user still sees movement
       setWheelAngle(p => p + 360);
-      setTimeout(() => setLoading(false), SPIN_MS);
+      setTimeout(() => {setLoading(false);setUpright(true);}, SPIN_MS);
       return;
     }
 
@@ -312,52 +315,60 @@ gradient = `conic-gradient(from 0deg, ${segs.join(",")})`;
             >
               <div style={{ ...wheelBase, background: gradient }} />
 
-{/* labels/icons, positioned from the CENTER */}
-{labels.map((l, idx) => (
-  <div
-    key={idx}
-    style={{
-      position: "absolute",
-      left: "50%",
-      top: "50%",
-      // 1) rotate to the slice center
-      // 2) then move outward along the radius (tweak -44% to taste)
-      transform: `rotate(${l.mid}deg) translateY(-44%)`,
-      transformOrigin: "50% 50%",
-      pointerEvents: "none",
-      zIndex: 3,
-    }}
-  >
-    {/* keep content upright: undo both the ring rotation and the wheel spin */}
+{/* labels/icons, positioned from the CENTER and attached to slices */}
+{labels.map((l, idx) => {
+  // If upright === true, counter-rotate by -(wheelAngle + l.mid) to face up.
+  // If upright === false (spinning), don't counter-rotate -> they spin with the slice.
+  const innerRotate = upright ? (-(wheelAngle + l.mid)) : 0;
+
+  return (
     <div
+      key={idx}
       style={{
-        transform: `rotate(${-(wheelAngle + l.mid)}deg)`,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+        // 1) center the anchor
+        // 2) rotate to the slice center
+        // 3) move outward along the radius
+        transform: `translate(-50%, -50%) rotate(${l.mid}deg) translateY(-46%)`,
+        transformOrigin: "50% 50%",
+        pointerEvents: "none",
+        zIndex: 3,
       }}
-      title={labels[idx]?.text ?? "Hədiyyə"}
     >
-      <img
-        src={iconFor((wedges[idx] as any)?.iconType)}
-        alt=""
-        width={40}
-        height={40}
+      <div
         style={{
-          width: 40,
-          height: 40,
-          objectFit: "contain",
-          marginBottom: 6,
-          filter: "drop-shadow(0 1px 1px rgba(0,0,0,.15))",
-          pointerEvents: "none",
-          userSelect: "none",
+          transform: `rotate(${innerRotate}deg)`,
+          transition: upright ? "transform .25s ease-out" : "none",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
         }}
-      />
-      <span style={labelChip}>{labels[idx]?.text ?? "Hədiyyə"}</span>
+        title={labels[idx]?.text ?? "Hədiyyə"}
+      >
+        <img
+          src={iconFor((wedges[idx] as any)?.iconType)}
+          alt=""
+          width={36}
+          height={36}
+          style={{
+            width: 36,
+            height: 36,
+            objectFit: "contain",
+            marginBottom: 6,
+            filter: "drop-shadow(0 1px 1px rgba(0,0,0,.15))",
+            pointerEvents: "none",
+            userSelect: "none",
+          }}
+        />
+        <span style={labelChip}>{labels[idx]?.text ?? "Hədiyyə"}</span>
+      </div>
     </div>
-  </div>
-))}
+  );
+})}
+
 
 
               <div style={hub} />
