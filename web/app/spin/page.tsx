@@ -363,24 +363,27 @@ gradient = `conic-gradient(from 0deg, ${segs.join(",")})`;
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            <button
-              onClick={spin}
-              disabled={loading || hasActive}
-              style={{ ...btnPrimary, opacity: loading || hasActive ? 0.7 : 1 }}
-              title={hasActive ? "You already have a code" : ""}
-            >
-              {hasActive ? "You already have a code" : (loading ? "Spinning…" : "Spin")}
-            </button>
+        <div style={buttonStack}>
+  <button
+    onClick={spin}
+    disabled={loading || hasActive}
+    style={{ ...btnPrimary, width: 220, opacity: loading || hasActive ? 0.7 : 1 }}
+    title={hasActive ? "You already have a code" : ""}
+  >
+    {hasActive ? "You already have a code" : (loading ? "Spinning…" : "Spin")}
+  </button>
 
-            <button onClick={refreshStatus} style={btnSecondary}>
-              Refresh status
-            </button>
+  <button onClick={refreshStatus} style={{ ...btnSecondary, width: 220 }}>
+    Refresh status
+  </button>
 
-            {error && (
-              <div role="alert" style={{color:"#b24a3b", fontWeight:600}}>{error}</div>
-            )}
-          </div>
+  {error && (
+    <div role="alert" style={{ color: "#b24a3b", fontWeight: 600, marginTop: 6 }}>
+      {error}
+    </div>
+  )}
+</div>
+
         </section>
 
         {/* Result card */}
@@ -475,10 +478,19 @@ const head: React.CSSProperties = {
 
 const wheelRow: React.CSSProperties = {
   display: "grid",
-  gap: 24,
-  gridTemplateColumns: "minmax(260px, 380px) 1fr",
+  gap: 16,
+  gridTemplateColumns: "1fr",   // one column
+  justifyItems: "center",       // center wheel & buttons
   alignItems: "center",
 };
+
+const buttonStack: React.CSSProperties = {
+  display: "grid",
+  gap: 10,
+  justifyItems: "center",
+  marginTop: 6,
+};
+
 
 const wheelWrap: React.CSSProperties = {
   position: "relative",
