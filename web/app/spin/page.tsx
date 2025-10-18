@@ -1,6 +1,6 @@
 // web/app/spin/page.tsx
 "use client";
-export const dynamic = 'force-dynamic'; 
+export const dynamic = 'force-dynamic';
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -68,10 +68,10 @@ function iconFor(type?: string | null): string {
 
 
 function validateName(name: string) {
-    const n = name.trim();
-    if (!n || n.length < 2) return { ok: false, reason: "Name looks too short." };
-    if (!/^[\p{L} .'-]+$/u.test(n)) return { ok: false, reason: "Use letters/spaces only." };
-    return { ok: true };
+  const n = name.trim();
+  if (!n || n.length < 2) return { ok: false, reason: "Name looks too short." };
+  if (!/^[\p{L} .'-]+$/u.test(n)) return { ok: false, reason: "Use letters/spaces only." };
+  return { ok: true };
 }
 
 function angleForMid(mid: number, currentAngle: number) {
@@ -88,17 +88,17 @@ export default function Page() {
   const router = useRouter();
 
   // ---- fixed-order hooks ----
-  const [mounted, setMounted]   = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [fullName, setFullName] = useState<string | null>(null);
-  const [phone, setPhone]       = useState<string | null>(null);
+  const [phone, setPhone] = useState<string | null>(null);
 
-  const [result, setResult]     = useState<SpinResponse | null>(null);
-  const [error, setError]       = useState<string | null>(null);
-  const [loading, setLoading]   = useState(false);
-  const [copied, setCopied]     = useState(false);
+  const [result, setResult] = useState<SpinResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [upright, setUpright] = useState(true);
 
-  const [now, setNow]           = useState<number>(Date.now());
+  const [now, setNow] = useState<number>(Date.now());
   const tickRef = useRef<number | null>(null);
 
   // wheel state
@@ -139,7 +139,7 @@ export default function Page() {
   }, []);
 
   // preload current status
-  useEffect(() => { if (mounted && haveCreds) {setUpright(true);refreshStatus();} }, [mounted, haveCreds, fullName, phone]);
+  useEffect(() => { if (mounted && haveCreds) { setUpright(true); refreshStatus(); } }, [mounted, haveCreds, fullName, phone]);
 
   async function refreshStatus() {
     if (!phone) return;
@@ -162,57 +162,57 @@ export default function Page() {
 
 
   async function spin() {
-  if (!haveCreds) return router.push("/login?next=/spin");
-  setError(null);
-  setResult(null);
-  setCopied(false);
+    if (!haveCreds) return router.push("/login?next=/spin");
+    setError(null);
+    setResult(null);
+    setCopied(false);
 
-  const SPIN_MS = 3200;
-  setLoading(true); // enables the long CSS transition
-  setUpright(false); // let labels spin with the wheel
+    const SPIN_MS = 3200;
+    setLoading(true); // enables the long CSS transition
+    setUpright(false); // let labels spin with the wheel
 
-  try {
-    // 1) Ask server which prize we got
-    const r = await apiPost<SpinResponse>("/api/spin", {
-      full_name: fullName!,
-      phone: normalizePhone(phone!),
-      device_hash: deviceId(),
-    });
-    setResult(r);
+    try {
+      // 1) Ask server which prize we got
+      const r = await apiPost<SpinResponse>("/api/spin", {
+        full_name: fullName!,
+        phone: normalizePhone(phone!),
+        device_hash: deviceId(),
+      });
+      setResult(r);
 
-    // 2) Server tells us the exact wedge index
-    const k = (r as any).wedge_index as number | undefined;
-    const count = (r as any).wedges_count as number | undefined;
+      // 2) Server tells us the exact wedge index
+      const k = (r as any).wedge_index as number | undefined;
+      const count = (r as any).wedges_count as number | undefined;
 
-    const n = count && count > 0 ? count : wedges.length;
-    if (typeof k !== "number" || n <= 0) {
-      // graceful fallback so the user still sees movement
-      setWheelAngle(p => p + 360);
-      setTimeout(() => {setLoading(false);setUpright(true);}, SPIN_MS);
-      return;
+      const n = count && count > 0 ? count : wedges.length;
+      if (typeof k !== "number" || n <= 0) {
+        // graceful fallback so the user still sees movement
+        setWheelAngle(p => p + 360);
+        setTimeout(() => { setLoading(false); setUpright(true); }, SPIN_MS);
+        return;
+      }
+
+      // 3) Rotate so the center of slice k aligns with the pointer
+      const slice = 360 / n;
+      const mid = k * slice + slice / 2;
+
+      // pick where your pointer lives: top = 270°, bottom = 180°
+      const POINTER_DEG = 180;   // ← set to 180 if you want the pointer at bottom
+      const TURNS = 6;           // full extra turns for drama
+
+      const current = norm(wheelAngle);
+      const targetStop = norm(POINTER_DEG - mid);
+      const rawDelta = norm(targetStop - current);
+      const delta = rawDelta < 20 ? rawDelta + 360 : rawDelta; // avoid micro-spin
+
+      setWheelAngle(p => p + TURNS * 360 + delta);
+      setTimeout(() => setLoading(false), SPIN_MS + 80);
+
+    } catch (e: any) {
+      setError(e.message || "Failed to spin");
+      setLoading(false);
     }
-
-    // 3) Rotate so the center of slice k aligns with the pointer
-    const slice = 360 / n;
-    const mid = k * slice + slice / 2;
-
-    // pick where your pointer lives: top = 270°, bottom = 180°
-    const POINTER_DEG = 180;   // ← set to 180 if you want the pointer at bottom
-    const TURNS = 6;           // full extra turns for drama
-
-    const current = norm(wheelAngle);
-    const targetStop = norm(POINTER_DEG - mid);
-    const rawDelta = norm(targetStop - current);
-    const delta = rawDelta < 20 ? rawDelta + 360 : rawDelta; // avoid micro-spin
-
-    setWheelAngle(p => p + TURNS * 360 + delta);
-    setTimeout(() => setLoading(false), SPIN_MS + 80);
-
-  } catch (e: any) {
-    setError(e.message || "Failed to spin");
-    setLoading(false);
   }
-}
 
 
   async function copyCode() {
@@ -246,44 +246,44 @@ export default function Page() {
 
   if (!mounted || !haveCreds) return null;
 
-// build wedges (CSS basis: 0° = right, clockwise)
-const palette = ["#ffd1c1","#ffe6a7","#c2e8ce","#d8d3ff","#ffc2cc","#fbe0a0","#c7efd8","#e3ddff","#ffd8cd","#f7edc9"];
-const BAKERY_PALETTE = [
-  "#F8D8C6", // soft peach
-  "#F9E5B9", // warm vanilla
-  "#CDE8D5", // mint cream
-  "#E4DAFF", // lilac glaze
-  "#FFC7D1", // strawberry frosting
-  "#FBE4B7", // honey butter
-  "#D3F0E3", // pistachio cream
-  "#EDE6FF", // lavender sugar
-];
+  // build wedges (CSS basis: 0° = right, clockwise)
+  const palette = ["#ffd1c1", "#ffe6a7", "#c2e8ce", "#d8d3ff", "#ffc2cc", "#fbe0a0", "#c7efd8", "#e3ddff", "#ffd8cd", "#f7edc9"];
+  const BAKERY_PALETTE = [
+    "#F8D8C6", // soft peach
+    "#F9E5B9", // warm vanilla
+    "#CDE8D5", // mint cream
+    "#E4DAFF", // lilac glaze
+    "#FFC7D1", // strawberry frosting
+    "#FBE4B7", // honey butter
+    "#D3F0E3", // pistachio cream
+    "#EDE6FF", // lavender sugar
+  ];
 
-let gradient = "";
-let labels: Array<{ text: string; mid: number }> = [];
-let wedges: Array<{ id?: number; name: string; start: number; end: number; mid: number }> = [];
+  let gradient = "";
+  let labels: Array<{ text: string; mid: number }> = [];
+  let wedges: Array<{ id?: number; name: string; start: number; end: number; mid: number }> = [];
 
-// ── equal wedges: one prize per slice (order == /api/prizes) ───────────────
-const n = prizes.length || 8;             // fallback to 8 placeholders if none yet
-const seg = 360 / n;
-let at = 0;
-const segs: string[] = [];
+  // ── equal wedges: one prize per slice (order == /api/prizes) ───────────────
+  const n = prizes.length || 8;             // fallback to 8 placeholders if none yet
+  const seg = 360 / n;
+  let at = 0;
+  const segs: string[] = [];
 
-for (let i = 0; i < n; i++) {
-  const end = at + seg;
-  const mid = at + seg / 2;
-  const color = palette[i % palette.length];
-  const id = prizes[i]?.id;
-  const iconType = (prizes[i] as any)?.icon_type || null;
-  const name = prizes[i]?.name ?? "Prize";   
+  for (let i = 0; i < n; i++) {
+    const end = at + seg;
+    const mid = at + seg / 2;
+    const color = palette[i % palette.length];
+    const id = prizes[i]?.id;
+    const iconType = (prizes[i] as any)?.icon_type || null;
+    const name = prizes[i]?.name ?? "Prize";
 
-  segs.push(`${color} ${at}deg ${end}deg`);
-  labels.push({ text: name, mid });
-  wedges.push({ id, name, start: at, end, mid, iconType } as any);
+    segs.push(`${color} ${at}deg ${end}deg`);
+    labels.push({ text: name, mid });
+    wedges.push({ id, name, start: at, end, mid, iconType } as any);
 
-  at = end;
-}
-gradient = `conic-gradient(from 0deg, ${segs.join(",")})`;
+    at = end;
+  }
+  gradient = `conic-gradient(from 0deg, ${segs.join(",")})`;
 
   // ---- UI ----
   return (
@@ -291,9 +291,9 @@ gradient = `conic-gradient(from 0deg, ${segs.join(",")})`;
       <main style={card}>
         <header style={head}>
           <div>
-            <h1 style={{margin:0, fontSize:24, color:"#4a2e2a"}}>Bakery Wheel</h1>
-            <small style={{opacity:.75, color:"#6b4a43"}}>
-              Logged in as <b>{fullName}</b> · <a href="/login?next=/spin" style={{color:"#b24a3b"}}>change</a>
+            <h1 style={{ margin: 0, fontSize: 24, color: "#4a2e2a" }}>Bakery Wheel</h1>
+            <small style={{ opacity: .75, color: "#6b4a43" }}>
+              Logged in as <b>{fullName}</b> · <a href="/login?next=/spin" style={{ color: "#b24a3b" }}>change</a>
             </small>
           </div>
         </header>
@@ -315,74 +315,74 @@ gradient = `conic-gradient(from 0deg, ${segs.join(",")})`;
             >
               <div style={{ ...wheelBase, background: gradient }} />
 
-{/* labels/icons, attached to slices via full-size ring */}
-{labels.map((l, idx) => {
-  // If upright === true, counter-rotate so text faces up after the spin.
-  // If upright === false, let them spin with the wheel.
-  const innerRotate = upright ? (-(wheelAngle + l.mid)) : 0;
+              {/* labels/icons, attached to slices via full-size ring */}
+              {labels.map((l, idx) => {
+                // If upright === true, counter-rotate so text faces up after the spin.
+                // If upright === false, let them spin with the wheel.
+                const innerRotate = upright ? (-(wheelAngle + l.mid)) : 0;
 
-  return (
-    <div
-      key={idx}
-      style={{
-        ...labelRing,                      // <- full-size ring (inset: 0)
-        transform: `rotate(${l.mid}deg)`,  // rotate ring to the slice center
-      }}
-    >
-      <div
-        style={{
-          ...labelAtTop,                   // <- anchored by top: % relative to WHEEL
-          transform: `translateX(-50%) rotate(${innerRotate}deg)`,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        title={labels[idx]?.text ?? "Hədiyyə"}
-      >
-        <img
-          src={iconFor((wedges[idx] as any)?.iconType)}
-          alt=""
-          style={{
-            width: 36,
-            height: 36,
-            objectFit: "contain",
-            marginBottom: 6,
-            filter: "drop-shadow(0 1px 1px rgba(0,0,0,.15))",
-            pointerEvents: "none",
-            userSelect: "none",
-          }}
-        />
-        <span style={labelChip}>{labels[idx]?.text ?? "Hədiyyə"}</span>
-      </div>
-    </div>
-  );
-})}
+                return (
+                  <div
+                    key={idx}
+                    style={{
+                      ...labelRing,                      // <- full-size ring (inset: 0)
+                      transform: `rotate(${l.mid}deg)`,  // rotate ring to the slice center
+                    }}
+                  >
+                    <div
+                      style={{
+                        ...labelAtTop,                   // <- anchored by top: % relative to WHEEL
+                        transform: `translateX(-50%) rotate(${innerRotate}deg)`,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                      title={labels[idx]?.text ?? "Hədiyyə"}
+                    >
+                      <img
+                        src={iconFor((wedges[idx] as any)?.iconType)}
+                        alt=""
+                        style={{
+                          width: 36,
+                          height: 36,
+                          objectFit: "contain",
+                          marginBottom: 6,
+                          filter: "drop-shadow(0 1px 1px rgba(0,0,0,.15))",
+                          pointerEvents: "none",
+                          userSelect: "none",
+                        }}
+                      />
+                      <span style={labelChip}>{labels[idx]?.text ?? "Hədiyyə"}</span>
+                    </div>
+                  </div>
+                );
+              })}
 
               <div style={hub} />
             </div>
           </div>
 
-        <div style={buttonStack}>
-  <button
-    onClick={spin}
-    disabled={loading || hasActive}
-    style={{ ...btnPrimary, width: 220, opacity: loading || hasActive ? 0.7 : 1 }}
-    title={hasActive ? "You already have a code" : ""}
-  >
-    {hasActive ? "You already have a code" : (loading ? "Spinning…" : "Spin")}
-  </button>
+          <div style={buttonStack}>
+            <button
+              onClick={spin}
+              disabled={loading || hasActive}
+              style={{ ...btnPrimary, width: 220, opacity: loading || hasActive ? 0.7 : 1 }}
+              title={hasActive ? "You already have a code" : ""}
+            >
+              {hasActive ? "You already have a code" : (loading ? "Spinning…" : "Spin")}
+            </button>
 
-  <button onClick={refreshStatus} style={{ ...btnSecondary, width: 220 }}>
-    Refresh status
-  </button>
+            <button onClick={refreshStatus} style={{ ...btnSecondary, width: 220 }}>
+              Refresh status
+            </button>
 
-  {error && (
-    <div role="alert" style={{ color: "#b24a3b", fontWeight: 600, marginTop: 6 }}>
-      {error}
-    </div>
-  )}
-</div>
+            {error && (
+              <div role="alert" style={{ color: "#b24a3b", fontWeight: 600, marginTop: 6 }}>
+                {error}
+              </div>
+            )}
+          </div>
 
         </section>
 
@@ -392,28 +392,28 @@ gradient = `conic-gradient(from 0deg, ${segs.join(",")})`;
             <div style={{
               color:
                 hasActive ? "#2e7d32" :
-                result.status === "cooldown" ? "#ff8f00" :
-                "#b24a3b",
+                  result.status === "cooldown" ? "#ff8f00" :
+                    "#b24a3b",
               fontWeight: 700
             }}>
               {result.message}
             </div>
 
             {(result.status === "new" || result.status === "existing_active") && (
-              <div style={{display:"grid", gap:8}}>
-                <div style={{fontSize:16}}>
+              <div style={{ display: "grid", gap: 8 }}>
+                <div style={{ fontSize: 16 }}>
                   <b>You won:</b> {result.prize_name}
                   {result.prize_value ? <> — <i>{result.prize_value}</i></> : null}
                 </div>
 
-                <div style={{display:"flex", gap:10, alignItems:"center", flexWrap:"wrap"}}>
+                <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                   <span>Code: <code style={codePill}>{result.code}</code></span>
                   <button onClick={copyCode} style={btnMini} disabled={!result.code}>
                     {copied ? "Copied!" : "Copy"}
                   </button>
                 </div>
 
-                <div style={{opacity:.9}}>
+                <div style={{ opacity: .9 }}>
                   Expires: {fmt(result.expires_at)}
                   {result.expires_at && <> · <b>{countdown(result.expires_at)}</b> left</>}
                 </div>
@@ -421,21 +421,21 @@ gradient = `conic-gradient(from 0deg, ${segs.join(",")})`;
             )}
 
             {result.status === "already_redeemed" && (
-              <div style={{marginTop:6}}>
+              <div style={{ marginTop: 6 }}>
                 <div>Last redeemed at: <b>{fmt(result.redeemed_at)}</b></div>
                 {result.next_spin_at && <div>Next spin: {fmt(result.next_spin_at)} · <b>{countdown(result.next_spin_at)}</b></div>}
               </div>
             )}
 
             {result.status === "expired" && (
-              <div style={{marginTop:6}}>
+              <div style={{ marginTop: 6 }}>
                 <div>Last code expired: <b>{fmt(result.expires_at)}</b></div>
                 {result.next_spin_at && <div>Next spin: {fmt(result.next_spin_at)} · <b>{countdown(result.next_spin_at)}</b></div>}
               </div>
             )}
 
             {result.status === "cooldown" && result.next_spin_at && (
-              <div style={{marginTop:6}}>
+              <div style={{ marginTop: 6 }}>
                 <div>Next spin: {fmt(result.next_spin_at)} · <b>{countdown(result.next_spin_at)}</b></div>
               </div>
             )}
@@ -496,7 +496,7 @@ const wheelWrap: React.CSSProperties = {
   position: "relative",
   width: "100%",
   aspectRatio: "1 / 1",
-  overflow: "visible", 
+  overflow: "visible",
 };
 
 const pointer: React.CSSProperties = {

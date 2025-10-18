@@ -70,40 +70,40 @@ export default function AdminPrizesPage() {
 
 
   // add this near other state
-const [busyId, setBusyId] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
-async function removeRow(uid: string) {
-  const row = rows.find(r => r.uid === uid);
-  if (!row) return;
+  async function removeRow(uid: string) {
+    const row = rows.find(r => r.uid === uid);
+    if (!row) return;
 
-  // brand-new (no server id) → just remove locally
-  if (!row.id) {
-    setRows(v => v.filter(r => r.uid !== uid));
-    return;
-  }
-
-  if (!token) return;
-  if (!confirm(`Delete prize "${row.name}"?`)) return;
-
-  try {
-    setBusyId(uid);
-    const r = await fetch(`${API}/api/admin/prizes/${row.id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!r.ok) {
-      const data = await r.json().catch(() => ({}));
-      throw new Error(data.detail || "Failed to delete");
+    // brand-new (no server id) → just remove locally
+    if (!row.id) {
+      setRows(v => v.filter(r => r.uid !== uid));
+      return;
     }
-    // remove locally
-    setRows(v => v.filter(x => x.uid !== uid));
-    setMsg("✅ Prize deleted");
-  } catch (e: any) {
-    setMsg(`❌ ${e.message || "Delete failed"}`);
-  } finally {
-    setBusyId(null);
+
+    if (!token) return;
+    if (!confirm(`Delete prize "${row.name}"?`)) return;
+
+    try {
+      setBusyId(uid);
+      const r = await fetch(`${API}/api/admin/prizes/${row.id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!r.ok) {
+        const data = await r.json().catch(() => ({}));
+        throw new Error(data.detail || "Failed to delete");
+      }
+      // remove locally
+      setRows(v => v.filter(x => x.uid !== uid));
+      setMsg("✅ Prize deleted");
+    } catch (e: any) {
+      setMsg(`❌ ${e.message || "Delete failed"}`);
+    } finally {
+      setBusyId(null);
+    }
   }
-}
 
 
   function update(uid: string, patch: Partial<Prize>) {
@@ -152,25 +152,25 @@ async function removeRow(uid: string) {
   const totalWeight = rows.reduce((a, r) => a + (r.active ? r.weight : 0), 0);
 
   return (
-    <main style={{display:"grid",gap:16,maxWidth:1000}}>
+    <main style={{ display: "grid", gap: 16, maxWidth: 1000 }}>
       <h2>Admin — Set prizes</h2>
 
       <div style={backRow}>
         <a href="/admin" style={backBtn}>← Back to Admin</a>
       </div>
 
-      <div style={{display:"flex",gap:8,alignItems:"center"}}>
+      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
         <button onClick={addRow}>+ Add prize</button>
         <button onClick={save} disabled={!valid || saving}>
           {saving ? "Saving..." : "Save changes"}
         </button>
-        <span style={{opacity:0.7}}>Total active weight: <b>{totalWeight}</b></span>
+        <span style={{ opacity: 0.7 }}>Total active weight: <b>{totalWeight}</b></span>
       </div>
 
-      {msg && <div style={{color: msg.startsWith("✅") ? "green" : "crimson"}}>{msg}</div>}
+      {msg && <div style={{ color: msg.startsWith("✅") ? "green" : "crimson" }}>{msg}</div>}
 
-      <div style={{overflowX:"auto"}}>
-        <table style={{width:"100%", borderCollapse:"collapse"}}>
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr>
               <th style={th}>Active</th>
@@ -245,7 +245,7 @@ async function removeRow(uid: string) {
             ))}
             {!rows.length && (
               <tr>
-                <td colSpan={7} style={{padding:12,opacity:0.7}}>
+                <td colSpan={7} style={{ padding: 12, opacity: 0.7 }}>
                   No prizes yet. Click “Add prize”.
                 </td>
               </tr>
@@ -254,7 +254,7 @@ async function removeRow(uid: string) {
         </table>
       </div>
 
-      <small style={{opacity:0.7}}>
+      <small style={{ opacity: 0.7 }}>
         The chance of a prize is its <b>weight</b> divided by the sum of weights of all <b>active</b> prizes.
         Set weight 0 to keep a prize defined but never drawn.
       </small>
@@ -262,10 +262,10 @@ async function removeRow(uid: string) {
   );
 }
 
-const th: React.CSSProperties = { textAlign:"left", padding:"8px 6px", borderBottom:"1px solid #e5e5e5" };
-const td: React.CSSProperties = { padding:"6px", borderBottom:"1px solid #f1f1f1" };
-const tdCenter: React.CSSProperties = { ...td, textAlign:"center" };
-const tdN: React.CSSProperties = { ...td, width:120 };
+const th: React.CSSProperties = { textAlign: "left", padding: "8px 6px", borderBottom: "1px solid #e5e5e5" };
+const td: React.CSSProperties = { padding: "6px", borderBottom: "1px solid #f1f1f1" };
+const tdCenter: React.CSSProperties = { ...td, textAlign: "center" };
+const tdN: React.CSSProperties = { ...td, width: 120 };
 const backRow: React.CSSProperties = { marginBottom: 8 };
 const backBtn: React.CSSProperties = {
   display: "inline-block",
