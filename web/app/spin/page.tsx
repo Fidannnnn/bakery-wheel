@@ -312,47 +312,53 @@ gradient = `conic-gradient(from 0deg, ${segs.join(",")})`;
             >
               <div style={{ ...wheelBase, background: gradient }} />
 
-              {labels.map((l, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    ...labelRing,
-                    // move the "top anchor" to the slice center (mid is measured from top = -90)
-                    transform: `rotate(${l.mid}deg)`,
-                  }}
-                >
-                  
-                <div
-  style={{
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    transform: `translateX(-50%) rotate(${-(wheelAngle + l.mid)}deg)`,
-  }}
-  title={l.text}
->
-  {(wedges[idx] as any)?.iconType && (
-    <img
-      src={iconFor((wedges[idx] as any)?.iconType)} // your helper or path
-      alt=""
+{/* labels/icons, positioned from the CENTER */}
+{labels.map((l, idx) => (
+  <div
+    key={idx}
+    style={{
+      position: "absolute",
+      left: "50%",
+      top: "50%",
+      // 1) rotate to the slice center
+      // 2) then move outward along the radius (tweak -44% to taste)
+      transform: `rotate(${l.mid}deg) translateY(-44%)`,
+      transformOrigin: "50% 50%",
+      pointerEvents: "none",
+      zIndex: 3,
+    }}
+  >
+    {/* keep content upright: undo both the ring rotation and the wheel spin */}
+    <div
       style={{
-        width: 42,
-        height: 42,
-        objectFit: "contain",
-        marginBottom: 4,               // 👈 space between icon & text
-        pointerEvents: "none",
-        filter: "drop-shadow(0 1px 1px rgba(0,0,0,.15))",
+        transform: `rotate(${-(wheelAngle + l.mid)}deg)`,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
       }}
-    />
-  )}
-  <span style={labelChip}>{l.text ?? "Hədiyyə"}</span>
-</div>
+      title={labels[idx]?.text ?? "Hədiyyə"}
+    >
+      <img
+        src={iconFor((wedges[idx] as any)?.iconType)}
+        alt=""
+        width={40}
+        height={40}
+        style={{
+          width: 40,
+          height: 40,
+          objectFit: "contain",
+          marginBottom: 6,
+          filter: "drop-shadow(0 1px 1px rgba(0,0,0,.15))",
+          pointerEvents: "none",
+          userSelect: "none",
+        }}
+      />
+      <span style={labelChip}>{labels[idx]?.text ?? "Hədiyyə"}</span>
+    </div>
+  </div>
+))}
 
-
-                  
-                </div>
-              ))}
 
               <div style={hub} />
             </div>
@@ -532,23 +538,21 @@ const labelBase: React.CSSProperties = {
 
 const labelChip: React.CSSProperties = {
   display: "inline-block",
-  maxWidth: "min(68%, 260px)",  // stays inside slice but roomy; adjust if you want
-  padding: "6px 10px",
+  padding: "4px 8px",
   borderRadius: 10,
-  background: "rgba(255,255,255,0.92)",
-  border: "1px solid rgba(0,0,0,0.06)",
-  color: "#5a352f",
-  fontSize: "clamp(11px, 1.6vw, 13px)", // gentle auto-shrink on small screens
-  fontWeight: 600,
-  textAlign: "center",
+  background: "rgba(255,255,255,0.96)",
+  border: "1px solid rgba(0,0,0,0.08)",
+  color: "#2b140f",
+  fontWeight: 700,
+  fontSize: "clamp(11px, 1.5vw, 13px)",
   lineHeight: 1.15,
-  // IMPORTANT: allow wrapping — remove the truncation props you had before
+  textAlign: "center",
   whiteSpace: "normal",
   wordBreak: "break-word",
   position: "relative",
-  textWrap: "balance" as any,   // optional; helps multi-line look nicer
   zIndex: 5,
 };
+
 
 const ctaCol: React.CSSProperties = {
   display: "grid",
