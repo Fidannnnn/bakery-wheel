@@ -93,7 +93,7 @@ export default function AdminPrizesPage() {
       });
       if (!r.ok) {
         const data = await r.json().catch(() => ({}));
-        throw new Error(data.detail || "Failed to delete");
+        throw new Error(data.detail || "Failed to delete, deactivate instead");
       }
       // remove locally
       setRows(v => v.filter(x => x.uid !== uid));
