@@ -592,9 +592,13 @@ def admin_delete_prize(
     p = db.query(Prize).filter(Prize.id == prize_id).first()
     if not p:
         raise HTTPException(status_code=404, detail="Prize not found")
-    db.delete(p)
+
+    # Soft delete
+    p.active = False
+    p.weight = 0
     db.commit()
-    return {"ok": True}
+    return {"ok": True, "soft_deleted": True}
+
 
 @app.get("/api/admin/redemptions")
 def admin_redemptions(db: Session = Depends(get_db), _=Depends(require_admin)):
