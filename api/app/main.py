@@ -583,21 +583,32 @@ def admin_set_prizes(payload: PrizesSetRequest, db: Session = Depends(get_db), _
         message=f"Saved. Created {created}, updated {updated}, deactivated {deactivated}."
     )
 
+from sqlalchemy import func
+
 @app.delete("/api/admin/prizes/{prize_id}")
 def admin_delete_prize(
     prize_id: int = Path(..., ge=1),
     db: Session = Depends(get_db),
     _=Depends(require_admin),
-):
+):    
     p = db.query(Prize).filter(Prize.id == prize_id).first()
     if not p:
         raise HTTPException(status_code=404, detail="Prize not found")
 
-    # Soft delete
-    p.active = False
-    p.weight = 0
+    # Check references
+    code_cnt = db.query(func.count(Code.id)).filter(Code.prize_id == prize_id).scalar() or 0
+    spin_cnt = db.query(func.count(Spin.id)).filter(Spin.prize_id == prize_id).scalar() or 0
+
+    if code_cnt or spin_cnt:
+        raise HTTPException(
+            status_code=409,
+            detail="Prize is in use (codes/spins exist). Deactivate it instead."
+        )
+
+    db.delete(p)
     db.commit()
-    return {"ok": True, "soft_deleted": True}
+    return {"ok": True}
+
 
 
 @app.get("/api/admin/redemptions")
