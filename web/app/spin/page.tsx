@@ -226,16 +226,17 @@ export default function Page() {
   if (!mounted || !haveCreds) return null;
 
   // build wedges (CSS basis: 0° = right, clockwise)
-  const palette = ["#ffd1c1", "#ffe6a7", "#c2e8ce", "#d8d3ff", "#ffc2cc", "#fbe0a0", "#c7efd8", "#e3ddff", "#ffd8cd", "#f7edc9"];
-  const BAKERY_PALETTE = [
-    "#F8D8C6", // soft peach
-    "#F9E5B9", // warm vanilla
-    "#CDE8D5", // mint cream
-    "#E4DAFF", // lilac glaze
-    "#FFC7D1", // strawberry frosting
-    "#FBE4B7", // honey butter
-    "#D3F0E3", // pistachio cream
-    "#EDE6FF", // lavender sugar
+  const palette = [
+    "#FF3B2E", // vivid red
+    "#FF7B00", // orange
+    "#FFB300", // golden yellow
+    "#00BFFF", // bright blue
+    "#0096FF", // deep sky blue
+    "#6F00FF", // violet
+    "#FF00AA", // magenta
+    "#00CC66", // green
+    "#FFA500", // orange-yellow
+    "#FF1493", // hot pink
   ];
 
   let gradient = "";
@@ -431,7 +432,7 @@ export default function Page() {
 
 const wrap: React.CSSProperties = {
   minHeight: "100dvh",
-  background: "#fff7ec",
+  background: "radial-gradient(circle at center, #0b0d2b 0%, #020316 100%)",
   display: "grid",
   placeItems: "center",
   padding: 24,
@@ -442,8 +443,9 @@ const card: React.CSSProperties = {
   width: "100%",
   maxWidth: 980,
   borderRadius: 18,
-  border: "1px solid #f1e1cf",
-  background: "#fffaf3",
+  background: "rgba(255, 255, 255, 0.05)",
+  border: "1px solid rgba(255,255,255,0.1)",
+  color: "#fff",
   boxShadow: "0 10px 40px rgba(119,72,57,.12)",
   padding: 24,
   display: "grid",
@@ -499,8 +501,8 @@ const wheelBase: React.CSSProperties = {
   inset: 0,
   margin: "auto",
   borderRadius: "50%",
-  border: "12px solid #f3dfcc",
-  boxShadow: "inset 0 0 60px rgba(0,0,0,.06), 0 20px 40px rgba(0,0,0,.12)",
+  border: "14px solid #ff3b2e",
+  boxShadow: "0 0 30px rgba(255,59,46,0.6)",
   zIndex: 0,
 };
 
@@ -575,20 +577,20 @@ const codePill: React.CSSProperties = {
 const btnPrimary: React.CSSProperties = {
   padding: "12px 20px",
   borderRadius: 12,
-  border: "1px solid #b24a3b",
-  background: "linear-gradient(180deg, #ff8f7e, #e76a5a)",
-  color: "white",
+  background: "linear-gradient(180deg,#ff3b2e 0%,#ff7b00 100%)",
+  border: "1px solid #ffb300",
+  color: "#fff",
+  boxShadow: "0 10px 25px rgba(255,59,46,.4)",
   fontWeight: 700,
   cursor: "pointer",
-  boxShadow: "0 10px 24px rgba(178,74,59,.25)",
 };
 
 const btnSecondary: React.CSSProperties = {
   padding: "10px 16px",
   borderRadius: 12,
-  border: "1px solid #e8d7c4",
-  background: "#fff9f1",
-  color: "#6b4a43",
+  background: "linear-gradient(180deg,#303050 0%,#1a1a2a 100%)",
+  border: "1px solid #555",
+  color: "#fff",
   fontWeight: 600,
   cursor: "pointer",
 };

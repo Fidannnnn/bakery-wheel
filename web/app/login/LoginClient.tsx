@@ -121,39 +121,89 @@ export default function LoginClient({ next }: { next: string }) {
 }
 
 /* styles (unchanged) */
+/* lively gradient background */
 const wrap: React.CSSProperties = {
   minHeight: '100dvh',
   background:
-    'radial-gradient(900px 500px at 10% -10%, #fff3e6 0%, rgba(255,255,255,0) 60%),' +
-    'radial-gradient(1100px 700px at 120% 20%, #ffe8f0 0%, rgba(255,255,255,0) 55%),' +
-    'linear-gradient(180deg, #ffffff, #fafafa)',
-  display: 'grid', placeItems: 'center', padding: 24, color: '#1f2937',
+    'radial-gradient(1000px 600px at 10% -10%, #ffecd2 0%, rgba(255,255,255,0) 60%),' +
+    'radial-gradient(1200px 800px at 120% 20%, #ffe8f0 0%, rgba(255,255,255,0) 55%),' +
+    'linear-gradient(180deg, #fffaf3 0%, #fff5e1 100%)',
+  display: 'grid',
+  placeItems: 'center',
+  padding: 24,
+  color: '#1f1b17',
 };
+
+/* card pop effect */
 const card: React.CSSProperties = {
-  width: '100%', maxWidth: 560, borderRadius: 16, border: '1px solid #e5e7eb',
-  background: '#ffffff',
-  boxShadow: '0 10px 30px rgba(17, 24, 39, 0.08), 0 2px 6px rgba(17, 24, 39, 0.05)',
-  padding: 24, display: 'grid', gap: 16,
+  width: '100%',
+  maxWidth: 560,
+  borderRadius: 18,
+  border: '1px solid #ffd9b5',
+  background: '#fffdf8',
+  boxShadow: '0 12px 40px rgba(255, 102, 0, 0.25)',
+  padding: 28,
+  display: 'grid',
+  gap: 18,
 };
-const head: React.CSSProperties = { display: 'grid', gap: 6 };
-const label: React.CSSProperties = { display: 'grid', gap: 6 };
-const labelText: React.CSSProperties = { fontSize: 14, color: '#374151', fontWeight: 600 };
-const hintText: React.CSSProperties = { color: '#6b7280', fontSize: 12 };
+
+/* labels & inputs */
+const labelText: React.CSSProperties = {
+  fontSize: 14,
+  color: '#7a2b15', // warm brown-red
+  fontWeight: 600,
+};
+
+const hintText: React.CSSProperties = {
+  color: '#b85b3e',
+  fontSize: 12,
+};
+
 const input: React.CSSProperties = {
-  padding: '12px 12px', borderRadius: 12, border: '1px solid #d1d5db', background: '#ffffff',
-  color: '#111827', outline: 'none', boxShadow: '0 1px 0 rgba(0,0,0,0.02)',
+  padding: '12px 14px',
+  borderRadius: 12,
+  border: '1px solid #ffb688',
+  background: '#fff',
+  color: '#111',
+  outline: 'none',
+  transition: 'all .2s ease',
+  boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
 };
-const inputOk: React.CSSProperties = { borderColor: '#10b981', boxShadow: '0 0 0 3px rgba(16,185,129,0.15)' };
-const inputErr: React.CSSProperties = { borderColor: '#ef4444', boxShadow: '0 0 0 3px rgba(239,68,68,0.15)' };
-const errText: React.CSSProperties = { color: '#b91c1c', fontWeight: 600 };
+const inputOk: React.CSSProperties = {
+  borderColor: '#00c36a',
+  boxShadow: '0 0 0 3px rgba(0,195,106,0.2)',
+};
+const inputErr: React.CSSProperties = {
+  borderColor: '#ff3b2e',
+  boxShadow: '0 0 0 3px rgba(255,59,46,0.2)',
+};
+
+/* buttons */
 const btnPrimary: React.CSSProperties = {
-  padding: '12px 18px', borderRadius: 12, border: '1px solid #fb923c',
-  background: 'linear-gradient(180deg, #fbbf24 0%, #fb923c 100%)',
-  color: '#111827', fontWeight: 700, cursor: 'pointer', textDecoration: 'none',
-  boxShadow: '0 8px 20px rgba(251,146,60,0.35)',
+  padding: '12px 20px',
+  borderRadius: 12,
+  border: '1px solid #ff5a00',
+  background: 'linear-gradient(180deg, #ff7b00 0%, #ff3b2e 100%)',
+  color: '#fff',
+  fontWeight: 700,
+  cursor: 'pointer',
+  textDecoration: 'none',
+  boxShadow: '0 10px 24px rgba(255,59,46,0.4)',
+  transition: 'transform .15s ease',
 };
 const btnGhost: React.CSSProperties = {
-  padding: '12px 18px', borderRadius: 12, border: '1px solid #e5e7eb',
-  background: '#ffffff', color: '#374151', fontWeight: 600,
-  textDecoration: 'none', display: 'inline-flex', alignItems: 'center',
+  padding: '12px 20px',
+  borderRadius: 12,
+  border: '1px solid #ffc9a1',
+  background: 'linear-gradient(180deg,#fff8f3 0%,#fff2e5 100%)',
+  color: '#a33b25',
+  fontWeight: 600,
+  textDecoration: 'none',
+  display: 'inline-flex',
+  alignItems: 'center',
+  boxShadow: '0 3px 8px rgba(255,138,76,0.15)',
 };
+
+const head: React.CSSProperties = { display: 'grid', gap: 6 };
+const label: React.CSSProperties = { display: 'grid', gap: 6 };
+const errText: React.CSSProperties = { color: '#b91c1c', fontWeight: 600 };
