@@ -11,9 +11,9 @@ type Check = { ok: boolean; reason?: string };
 
 function validateName(name: string): Check {
   const n = name.trim();
-  if (!n) return { ok: false, reason: 'Please enter your full name.' };
-  if (n.length < 2) return { ok: false, reason: 'Name looks too short.' };
-  if (!/^[\p{L} .'-]+$/u.test(n)) return { ok: false, reason: 'Use letters/spaces only.' };
+  if (!n) return { ok: false, reason: 'Zəhmət olmasa, tam adınızı daxil edin..' };
+  if (n.length < 2) return { ok: false, reason: 'Ad çox qısadır.' };
+  if (!/^[\p{L} .'-]+$/u.test(n)) return { ok: false, reason: 'Yalnız hərf və boşluqlardan istifadə edin.' };
   return { ok: true };
 }
 
@@ -57,13 +57,13 @@ export default function LoginClient({ next }: { next: string }) {
     <div style={wrap}>
       <main style={card} aria-labelledby="login-title">
         <header style={head}>
-          <h2 id="login-title" style={{ margin: 0, color: '#1f2937' }}>Welcome</h2>
-          <p style={{ margin: 0, color: '#4b5563' }}>Sign in to spin the wheel</p>
+          <h2 id="login-title" style={{ margin: 0, color: '#1f2937' }}>Xoş gəldiniz</h2>
+          <p style={{ margin: 0, color: '#4b5563' }}>Çarxı fırlatmaq üçün daxil olun</p>
         </header>
 
         <section style={{ display: 'grid', gap: 14 }}>
           <label style={label}>
-            <span style={labelText}>Full name</span>
+            <span style={labelText}>Tam ad</span>
             <input
               type="text"
               autoComplete="name"
@@ -71,17 +71,17 @@ export default function LoginClient({ next }: { next: string }) {
               onChange={e => setFullName(e.target.value)}
               onBlur={() => setTouchedName(true)}
               onKeyDown={onKeyDown}
-              placeholder="Jane Doe"
+              placeholder="Aysel Məmmədova"
               aria-invalid={touchedName && !nV.ok}
               aria-describedby="name-help"
               style={{ ...input, ...(fullName ? (nV.ok ? inputOk : inputErr) : {}) }}
             />
-            <small id="name-help" style={hintText}>Please enter your first and last name.</small>
+            <small id="name-help" style={hintText}>Zəhmət olmasa, ad və soyadınızı daxil edin.</small>
             {touchedName && !nV.ok && (<small style={errText}>{nV.reason}</small>)}
           </label>
 
           <label style={label}>
-            <span style={labelText}>Phone</span>
+            <span style={labelText}>Telefon</span>
             <input
               type="tel"
               autoComplete="tel"
@@ -95,7 +95,7 @@ export default function LoginClient({ next }: { next: string }) {
               aria-describedby="phone-help"
               style={{ ...input, ...(phone ? (pV.ok ? inputOk : inputErr) : {}) }}
             />
-            <small id="phone-help" style={hintText}>Include country code (e.g., +994…).</small>
+            <small id="phone-help" style={hintText}>Ölkə kodunu daxil edin (məsələn, +994…).</small>
             {touchedPhone && !pV.ok && (<small style={errText}>{pV.reason}</small>)}
           </label>
 
@@ -104,15 +104,15 @@ export default function LoginClient({ next }: { next: string }) {
               onClick={doLogin}
               disabled={!canGo || loading}
               style={{ ...btnPrimary, opacity: (!canGo || loading) ? 0.8 : 1 }}
-              title={!canGo ? 'Fill both fields correctly' : ''}
+              title={!canGo ? 'Hər iki sahəni düzgün doldurun' : ''}
             >
-              {loading ? 'Please wait…' : 'Continue'}
+              {loading ? 'Zəhmət olmasa, gözləyin…' : 'Davam et'}
             </button>
-            <Link href="/" style={btnGhost as React.CSSProperties}>Back</Link>
+            <Link href="/" style={btnGhost as React.CSSProperties}>Geri</Link>
           </div>
 
           <small style={{ color: '#6b7280' }}>
-            We store your name & phone locally for convenience. You can change them later.
+            Ad və telefon nömrənizi rahatlıq üçün yerli olaraq saxlayırıq. Sonradan dəyişə bilərsiniz.
           </small>
         </section>
       </main>

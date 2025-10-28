@@ -14,7 +14,7 @@ export default function Home() {
   }, []);
 
   const href = loggedIn ? "/spin" : "/login?next=/spin";
-  const label = loggedIn ? "Go to spin" : "Sign in to spin";
+  const label = loggedIn ? "Çarxa keç" : "Fırlatmaq üçün daxil ol ";
 
   return (
     <div style={wrap}>
@@ -22,7 +22,7 @@ export default function Home() {
         <div style={{display:"grid", gap:14}}>
           <h1 style={title}>Bakery Wheel</h1>
           <p style={subtitle}>
-            Spin for a chance to win discounts and treats. One spin per {cooldownCopy()}.
+            Endirim və şirniyyat qazanmaq şansı üçün çarxı fırladın. Hər {cooldownCopy()} bir dəfə fırlatmaq olar..
           </p>
 
           <div style={{marginTop:8}}>
@@ -32,7 +32,7 @@ export default function Home() {
           </div>
 
           <p style={hint}>
-            You’ll be asked for your email and phone on first sign in so we can deliver your code.
+            İlk girişdə kodu sizə göndərə bilmək üçün e-poçt və telefon nömrəniz istəniləcək.
           </p>
         </div>
       </main>

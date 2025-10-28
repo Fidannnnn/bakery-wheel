@@ -18,7 +18,7 @@ export default function AdminLoginClient({ next }: { next: string }) {
       localStorage.setItem('bw_admin_token', token);
       router.push(next || '/admin');
     } catch (e: any) {
-      setErr(e.message || 'Login failed');
+      setErr(e.message || 'Giriş uğursuz oldu');
     } finally {
       setLoading(false);
     }
@@ -26,15 +26,15 @@ export default function AdminLoginClient({ next }: { next: string }) {
 
   return (
     <main style={{display:'grid',gap:12,maxWidth:420}}>
-      <h2>Admin — Login</h2>
+      <h2>Admin — Giriş</h2>
       <input
         type="password"
-        placeholder="Admin password"
+        placeholder="Admin parolu"
         value={password}
         onChange={e=>setPassword(e.target.value)}
       />
       <button onClick={login} disabled={!password.trim() || loading}>
-        {loading ? 'Please wait...' : 'Login'}
+        {loading ? 'Zəhmət olmasa, gözləyin...' : 'Daxil ol'}
       </button>
       {err && <div style={{color:'crimson'}}>{err}</div>}
     </main>

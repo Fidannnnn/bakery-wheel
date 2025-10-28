@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiPost } from "@/lib/api";
 
-type Analytics = {
+type Analytics = {  
   totals: { users: number; spins: number; codes: number; redeemed: number; expired: number; active: number };
   prizes: { prize_id: number; prize_name: string; issued: number; redeemed: number; expired: number }[];
   recent: { code: string; redeemed_at: string; prize: string; user_full_name: string | null; user_phone: string | null }[];
@@ -23,19 +23,19 @@ export default function AnalyticsPage() {
         const r = await apiPost<Analytics>("/api/admin/analytics", {}, { admin: true });
         setData(r);
       } catch (e: any) {
-        setErr(e.message || "Failed to load analytics");
+        setErr(e.message || "Analitikanı yükləmək mümkün olmadı");
       }
     })();
   }, [router]);
 
-  if (err) return <main><h3>Analytics</h3><div style={{color:"crimson"}}>{err}</div></main>;
-  if (!data) return <main><h3>Analytics</h3><div>Loading…</div></main>;
+  if (err) return <main><h3>Analitika</h3><div style={{color:"crimson"}}>{err}</div></main>;
+  if (!data) return <main><h3>Analitika</h3><div>Yüklənir…</div></main>;
 
   return (
     <main style={{display:"grid",gap:16}}>
-      <h3>Analytics</h3>
+      <h3>Analitika</h3>
       <div style={backRow}>
-        <a href="/admin" style={backBtn}>← Back to Admin</a>
+        <a href="/admin" style={backBtn}>← Admin səhifəsinə qayıt</a>
       </div>
       <section style={{display:"grid",gridTemplateColumns:"repeat(3, minmax(140px, 1fr))", gap:12}}>
         {Object.entries(data.totals).map(([k,v])=>(
@@ -47,10 +47,10 @@ export default function AnalyticsPage() {
       </section>
 
       <section>
-        <h4>By prize</h4>
+        <h4>Hədiyyələr üzrə</h4>
         <table style={{borderCollapse:"collapse", width:"100%"}}>
           <thead>
-            <tr><th align="left">Prize</th><th align="right">Issued</th><th align="right">Redeemed</th><th align="right">Expired</th></tr>
+            <tr><th align="left">Hədiyyə</th><th align="right">Verilmiş</th><th align="right">İstifadə edilmiş</th><th align="right">Müddəti bitmiş</th></tr>
           </thead>
           <tbody>
             {data.prizes.map(p=>(
@@ -66,7 +66,7 @@ export default function AnalyticsPage() {
       </section>
 
       <section>
-        <h4>Recent redemptions</h4>
+        <h4>Son istifadə olunan kodlar</h4>
         <ul>
           {data.recent.map((r,i)=>(
             <li key={i}>

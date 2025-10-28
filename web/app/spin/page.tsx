@@ -51,8 +51,8 @@ function iconFor(type?: string | null): string | null {
 
 function validateName(name: string) {
   const n = name.trim();
-  if (!n || n.length < 2) return { ok: false, reason: "Name looks too short." };
-  if (!/^[\p{L} .'-]+$/u.test(n)) return { ok: false, reason: "Use letters/spaces only." };
+  if (!n || n.length < 2) return { ok: false, reason: "Ad çox qısadır." };
+  if (!/^[\p{L} .'-]+$/u.test(n)) return { ok: false, reason: "Yalnız hərf və boşluqlardan istifadə edin." };
   return { ok: true };
 }
 
@@ -188,7 +188,7 @@ export default function Page() {
       setTimeout(() => setLoading(false), SPIN_MS + 80);
 
     } catch (e: any) {
-      setError(e.message || "Failed to spin");
+      setError(e.message || "Fırlatmaq mümkün olmadı");
       setLoading(false);
     }
   }
@@ -201,7 +201,7 @@ export default function Page() {
       setCopied(true);
       setTimeout(() => setCopied(false), 1200);
     } catch {
-      setError("Couldn't copy — copy it manually.");
+      setError("Kopyalama uğursuz oldu — əllə kopyalayın.");
     }
   }
 
@@ -213,7 +213,7 @@ export default function Page() {
   function countdown(to?: string | null) {
     if (!to) return "";
     const ms = new Date(to).getTime() - now;
-    if (ms <= 0) return "expired";
+    if (ms <= 0) return "00:00:00";
     const s = Math.floor(ms / 1000);
     const hh = Math.floor(s / 3600).toString().padStart(2, "0");
     const mm = Math.floor((s % 3600) / 60).toString().padStart(2, "0");
@@ -272,7 +272,7 @@ export default function Page() {
           <div>
             <h1 style={{ margin: 0, fontSize: 24, color: "#4a2e2a" }}>Bakery Wheel</h1>
             <small style={{ opacity: .75, color: "#6b4a43" }}>
-              Logged in as <b>{fullName}</b> · <a href="/login?next=/spin" style={{ color: "#b24a3b" }}>change</a>
+              Daxil olmusunuz: <b>{fullName}</b> · <a href="/login?next=/spin" style={{ color: "#b24a3b" }}>dəyiş</a>
             </small>
           </div>
         </header>
@@ -349,13 +349,13 @@ export default function Page() {
               onClick={spin}
               disabled={loading || hasActive}
               style={{ ...btnPrimary, width: 220, opacity: loading || hasActive ? 0.7 : 1 }}
-              title={hasActive ? "You already have a code" : ""}
+              title={hasActive ? "Artıq bir kodunuz var" : ""}
             >
-              {hasActive ? "You already have a code" : (loading ? "Spinning…" : "Spin")}
+              {hasActive ? "Artıq bir kodunuz var" : (loading ? "Fırlanır…" : "Fırlat")}
             </button>
 
             <button onClick={refreshStatus} style={{ ...btnSecondary, width: 220 }}>
-              Refresh status
+              Statusu yenilə
             </button>
 
             {error && (
@@ -383,41 +383,41 @@ export default function Page() {
             {(result.status === "new" || result.status === "existing_active") && (
               <div style={{ display: "grid", gap: 8 }}>
                 <div style={{ fontSize: 16 }}>
-                  <b>You won:</b> {result.prize_name}
+                  <b>Qazandınız:</b> {result.prize_name}
                   {result.prize_value ? <> — <i>{result.prize_value}</i></> : null}
                 </div>
 
                 <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                   <span>Code: <code style={codePill}>{result.code}</code></span>
                   <button onClick={copyCode} style={btnMini} disabled={!result.code}>
-                    {copied ? "Copied!" : "Copy"}
+                    {copied ? "Kopyalandı!" : "Kopyala"}
                   </button>
                 </div>
 
                 <div style={{ opacity: .9 }}>
-                  Expires: {fmt(result.expires_at)}
-                  {result.expires_at && <> · <b>{countdown(result.expires_at)}</b> left</>}
+                  Bitmə tarixi: {fmt(result.expires_at)}
+                  {result.expires_at && <> · <b>{countdown(result.expires_at)}</b> qalıb</>}
                 </div>
               </div>
             )}
 
             {result.status === "already_redeemed" && (
               <div style={{ marginTop: 6 }}>
-                <div>Last redeemed at: <b>{fmt(result.redeemed_at)}</b></div>
-                {result.next_spin_at && <div>Next spin: {fmt(result.next_spin_at)} · <b>{countdown(result.next_spin_at)}</b></div>}
+                <div>Istifadə olunma tarixi:<b>{fmt(result.redeemed_at)}</b></div>
+                {result.next_spin_at && <div>Növbəti fırlatma: {fmt(result.next_spin_at)} · <b>{countdown(result.next_spin_at)}</b></div>}
               </div>
             )}
 
             {result.status === "expired" && (
               <div style={{ marginTop: 6 }}>
-                <div>Last code expired: <b>{fmt(result.expires_at)}</b></div>
-                {result.next_spin_at && <div>Next spin: {fmt(result.next_spin_at)} · <b>{countdown(result.next_spin_at)}</b></div>}
+                <div>Son kodun müddəti bitib: <b>{fmt(result.expires_at)}</b></div>
+                {result.next_spin_at && <div>Növbəti fırlatma: {fmt(result.next_spin_at)} · <b>{countdown(result.next_spin_at)}</b></div>}
               </div>
             )}
 
             {result.status === "cooldown" && result.next_spin_at && (
               <div style={{ marginTop: 6 }}>
-                <div>Next spin: {fmt(result.next_spin_at)} · <b>{countdown(result.next_spin_at)}</b></div>
+                <div>Növbəti fırlatma: {fmt(result.next_spin_at)} · <b>{countdown(result.next_spin_at)}</b></div>
               </div>
             )}
           </section>

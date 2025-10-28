@@ -56,7 +56,7 @@ export default function AdminPrizesPage() {
       } else if (r.status === 401 || r.status === 403) {
         router.replace("/admin/login?next=/admin/prizes");
       } else {
-        setMsg("Failed to load prizes.");
+        setMsg("Hədiyyələri yükləmək mümkün olmadı.");
       }
     })();
   }, [router]);
@@ -83,7 +83,7 @@ export default function AdminPrizesPage() {
     }
 
     if (!token) return;
-    if (!confirm(`Delete prize "${row.name}"?`)) return;
+    if (!confirm(`"${row.name}" hədiyyəsini silmək istəyirsiniz?`)) return;
 
     try {
       setBusyId(uid);
@@ -93,13 +93,13 @@ export default function AdminPrizesPage() {
       });
       if (!r.ok) {
         const data = await r.json().catch(() => ({}));
-        throw new Error(data.detail || "Failed to delete, deactivate instead");
+        throw new Error(data.detail || "Silmək mümkün olmadı, əvəzinə deaktiv edin.");
       }
       // remove locally
       setRows(v => v.filter(x => x.uid !== uid));
-      setMsg("✅ Prize deleted");
+      setMsg("✅ Hədiyyə silindi");
     } catch (e: any) {
-      setMsg(`❌ ${e.message || "Delete failed"}`);
+      setMsg(`❌ ${e.message || "❌ Silmək mümkün olmadı, əvəzinə deaktiv edin."}`);
     } finally {
       setBusyId(null);
     }
@@ -144,7 +144,7 @@ export default function AdminPrizesPage() {
         setRows(fresh.map(p => ({ ...p, uid: newUid() })));
       }
     } else {
-      setMsg(`❌ ${data.detail || data.message || "Failed to save"}`);
+      setMsg(`❌ ${data.detail || data.message || "Yadda saxlamaq mümkün olmadı"}`);
     }
     setSaving(false);
   }
@@ -153,18 +153,18 @@ export default function AdminPrizesPage() {
 
   return (
     <main style={{ display: "grid", gap: 16, maxWidth: 1000 }}>
-      <h2>Admin — Set prizes</h2>
+      <h2>Admin — Hədiyyələri tənzimlə</h2>
 
       <div style={backRow}>
-        <a href="/admin" style={backBtn}>← Back to Admin</a>
+        <a href="/admin" style={backBtn}>← Admin səhifəsinə qayıt</a>
       </div>
 
       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        <button onClick={addRow}>+ Add prize</button>
+        <button onClick={addRow}>+ Hədiyyə əlavə et</button>
         <button onClick={save} disabled={!valid || saving}>
-          {saving ? "Saving..." : "Save changes"}
+          {saving ? "Yadda saxlanılır..." : "Dəyişiklikləri yadda saxla"}
         </button>
-        <span style={{ opacity: 0.7 }}>Total active weight: <b>{totalWeight}</b></span>
+        <span style={{ opacity: 0.7 }}>Aktiv çəki cəmi: <b>{totalWeight}</b></span>
       </div>
 
       {msg && <div style={{ color: msg.startsWith("✅") ? "green" : "crimson" }}>{msg}</div>}
@@ -173,12 +173,12 @@ export default function AdminPrizesPage() {
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr>
-              <th style={th}>Active</th>
-              <th style={th}>Name</th>
-              <th style={th}>Type</th>
-              <th style={th}>Value</th>
-              <th style={th}>Weight (likelihood)</th>
-              <th style={th}>Icon</th>
+              <th style={th}>Aktiv</th>
+              <th style={th}>Ad</th>
+              <th style={th}>Növ</th>
+              <th style={th}>Dəyər</th>
+              <th style={th}>Çəki (ehtimal)</th>
+              <th style={th}>Ikon</th>
               <th style={th}></th>
             </tr>
           </thead>
@@ -196,21 +196,21 @@ export default function AdminPrizesPage() {
                   <input
                     value={r.name}
                     onChange={e => update(r.uid, { name: e.target.value })}
-                    placeholder="10% Off / Free Coffee"
+                    placeholder="10% Endirim / Pulsuz Qəhvə"
                   />
                 </td>
                 <td style={td}>
                   <input
                     value={r.type}
                     onChange={e => update(r.uid, { type: e.target.value })}
-                    placeholder="discount / free_item / other"
+                    placeholder="endirim / pulsuz_əşyа / digər"
                   />
                 </td>
                 <td style={td}>
                   <input
                     value={r.value ?? ""}
                     onChange={e => update(r.uid, { value: e.target.value })}
-                    placeholder="10% / Cappuccino"
+                    placeholder="10% / Kapuçino"
                   />
                 </td>
                 <td style={tdN}>
@@ -238,7 +238,7 @@ export default function AdminPrizesPage() {
 
                 <td style={td}>
                   <button onClick={() => removeRow(r.uid)} disabled={busyId === r.uid}>
-                    {busyId === r.uid ? "Removing…" : "Remove"}
+                    {busyId === r.uid ? "Removing…" : "Sil"}
                   </button>
                 </td>
               </tr>
@@ -246,7 +246,7 @@ export default function AdminPrizesPage() {
             {!rows.length && (
               <tr>
                 <td colSpan={7} style={{ padding: 12, opacity: 0.7 }}>
-                  No prizes yet. Click “Add prize”.
+                  Hələ hədiyyə yoxdur. “Hədiyyə əlavə et” düyməsinə klikləyin.
                 </td>
               </tr>
             )}
