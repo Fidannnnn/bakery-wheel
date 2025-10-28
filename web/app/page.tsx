@@ -8,24 +8,25 @@ export default function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-    // consider user "logged in" if cookie is set or email+phone exist in localStorage
     const hasCookie = document.cookie.split("; ").some(c => c.startsWith("bw_user="));
-    const hasStoredCreds = !!localStorage.getItem("bw_full_name") && !!localStorage.getItem("bw_phone");    setLoggedIn(hasCookie || hasStoredCreds);
+    const hasStoredCreds =
+      !!localStorage.getItem("bw_full_name") && !!localStorage.getItem("bw_phone");
+    setLoggedIn(hasCookie || hasStoredCreds);
   }, []);
 
   const href = loggedIn ? "/spin" : "/login?next=/spin";
-  const label = loggedIn ? "Çarxa keç" : "Fırlatmaq üçün daxil ol ";
+  const label = loggedIn ? "Çarxa keç" : "Fırlatmaq üçün daxil ol";
 
   return (
     <div style={wrap}>
-      <main style={wrap}>
-        <div style={{display:"grid", gap:14}}>
-          <h1 style={title}>Bakery Wheel</h1>
+      <main style={card}>
+        <div style={{ display: "grid", gap: 14 }}>
+          <h1 style={title}>Fırın Çarxı</h1>
           <p style={subtitle}>
-            Endirim və şirniyyat qazanmaq şansı üçün çarxı fırladın. Hər {cooldownCopy()} bir dəfə fırlatmaq olar..
+            Endirim və şirniyyat qazanmaq şansı üçün çarxı fırladın. Hər həftə bir dəfə fırlatmaq olar.
           </p>
 
-          <div style={{marginTop:8}}>
+          <div style={{ marginTop: 8 }}>
             <Link href={href} style={btnPrimary}>
               {label}
             </Link>
@@ -43,26 +44,30 @@ export default function Home() {
 /* ---- helpers / styles ---- */
 
 function cooldownCopy() {
-  // keep text neutral; the actual hours are enforced server-side
-  return "cooldown period";
+  // server still enforces real hours
+  return "gözləmə müddəti";
 }
 
+/* lively “wheel” theme */
 const wrap: React.CSSProperties = {
   minHeight: "100dvh",
-  background: "#fff7ec",
+  background:
+    "radial-gradient(1000px 600px at 10% -10%, #ffecd2 0%, rgba(255,255,255,0) 60%)," +
+    "radial-gradient(1200px 800px at 120% 20%, #ffe8f0 0%, rgba(255,255,255,0) 55%)," +
+    "linear-gradient(180deg, #fffaf3 0%, #fff2de 100%)",
   display: "grid",
   placeItems: "center",
   padding: 24,
-  color: "#3f2a26",
+  color: "#1f1b17",
 };
 
 const card: React.CSSProperties = {
   width: "100%",
-  maxWidth: 620,
+  maxWidth: 680,
   borderRadius: 18,
-  border: "1px solid #f1e1cf",
-  background: "#fffaf3",
-  boxShadow: "0 10px 40px rgba(119,72,57,.12)",
+  border: "1px solid #ffd9b5",
+  background: "#fffdf8",
+  boxShadow: "0 14px 44px rgba(255, 91, 0, 0.28)",
   padding: 28,
   display: "grid",
   gap: 16,
@@ -72,30 +77,34 @@ const card: React.CSSProperties = {
 const btnPrimary: React.CSSProperties = {
   display: "inline-block",
   margin: "8px auto 0",
-  padding: "12px 20px",
+  padding: "12px 22px",
   borderRadius: 12,
-  border: "1px solid #b24a3b",
-  background: "linear-gradient(180deg, #ff8f7e, #e76a5a)",
-  color: "white",
+  border: "1px solid #ff5a00",
+  background: "linear-gradient(180deg, #ff7b00 0%, #ff3b2e 100%)",
+  color: "#fff",
   textDecoration: "none",
-  fontWeight: 700,
+  fontWeight: 800,
   cursor: "pointer",
-  boxShadow: "0 10px 24px rgba(178,74,59,.25)",
+  boxShadow: "0 12px 26px rgba(255,59,46,.4)",
 };
+
 const title: React.CSSProperties = {
   margin: 0,
-  fontSize: 32,
+  fontSize: 34,
   letterSpacing: 0.3,
+  color: "#7a2b15",
 };
 
 const subtitle: React.CSSProperties = {
   margin: 0,
-  opacity: 0.85,
+  opacity: 0.95,
+  color: "#a33b25",
+  fontSize: 16,
 };
 
 const hint: React.CSSProperties = {
   margin: 0,
-  opacity: 0.65,
+  opacity: 0.75,
   fontSize: 13,
+  color: "#b85b3e",
 };
-
