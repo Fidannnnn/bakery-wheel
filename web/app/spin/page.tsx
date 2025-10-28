@@ -96,7 +96,6 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [upright, setUpright] = useState(true);
 
   const [now, setNow] = useState<number>(Date.now());
   const tickRef = useRef<number | null>(null);
@@ -122,7 +121,6 @@ export default function Page() {
   }, [fullName, phone]);
 
   // require login
-  useEffect(() => { if (mounted && !haveCreds) router.replace("/login?next=/spin"); }, [mounted, haveCreds, router]);
 
   // load active prizes for labels/wedges
   useEffect(() => {
@@ -139,7 +137,7 @@ export default function Page() {
   }, []);
 
   // preload current status
-  useEffect(() => { if (mounted && haveCreds) { setUpright(true); refreshStatus(); } }, [mounted, haveCreds, fullName, phone]);
+  useEffect(() => { if (mounted && haveCreds) { refreshStatus(); } }, [mounted, haveCreds, fullName, phone]);
 
   async function refreshStatus() {
     if (!phone) return;
@@ -169,7 +167,6 @@ export default function Page() {
 
     const SPIN_MS = 3200;
     setLoading(true); // enables the long CSS transition
-    setUpright(false); // let labels spin with the wheel
 
     try {
       // 1) Ask server which prize we got
@@ -188,7 +185,7 @@ export default function Page() {
       if (typeof k !== "number" || n <= 0) {
         // graceful fallback so the user still sees movement
         setWheelAngle(p => p + 360);
-        setTimeout(() => { setLoading(false); setUpright(true); }, SPIN_MS);
+        setTimeout(() => { setLoading(false); }, SPIN_MS);
         return;
       }
 
@@ -319,7 +316,7 @@ export default function Page() {
               {labels.map((l, idx) => {
                 // If upright === true, counter-rotate so text faces up after the spin.
                 // If upright === false, let them spin with the wheel.
-                const innerRotate = upright ? (-(wheelAngle + l.mid)) : 0;
+                const innerRotate = 90;
 
                 return (
                   <div
