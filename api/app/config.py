@@ -18,8 +18,8 @@ if ENV_PATH.exists():
 class Settings(BaseModel):
     database_url: str = os.getenv("DATABASE_URL", "")
     jwt_secret: str = os.getenv("JWT_SECRET", "dev_change_me")
-    code_expiry_hours: float = float(os.getenv("CODE_EXPIRY_HOURS", "0.01667"))
-    spin_cooldown_hours: float = float(os.getenv("SPIN_COOLDOWN_HOURS", "0.01667"))
+    code_expiry_hours: float = float(os.getenv("CODE_EXPIRY_HOURS", "168"))
+    spin_cooldown_hours: float = float(os.getenv("SPIN_COOLDOWN_HOURS", "168"))
     allowed_origins: list[str] = [
         o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o.strip()
     ]    
