@@ -271,8 +271,8 @@ export default function Page() {
       <main style={card}>
         <header style={head}>
           <div>
-            <h1 style={{ margin: 0, fontSize: 24, color: "#4a2e2a" }}>Ravira Çarxı</h1>
-            <small style={{ opacity: .75, color: "#6b4a43" }}>
+            <h1 style={{ margin: 0, fontSize: 24, color: "#e0a89fff" }}>Ravira Çarxı</h1>
+            <small style={{ opacity: .75, color: "#e7c9c3ff" }}>
               Daxil olmusunuz: <b>{fullName}</b> · <a href="/login?next=/spin" style={{ color: "#b24a3b" }}>dəyiş</a>
             </small>
           </div>
