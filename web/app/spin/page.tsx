@@ -31,25 +31,6 @@ const norm = (x: number) => ((x % 360) + 360) % 360;
 
 const POINTER_DEG = 270;
 
-// simple donut fallback (inline SVG as data URI)
-const FALLBACK_ICON =
-  'data:image/svg+xml;utf8,' +
-  encodeURIComponent(`
-<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
-  <defs>
-    <radialGradient id="g" cx="50%" cy="50%">
-      <stop offset="0%" stop-color="#fff4e6"/>
-      <stop offset="100%" stop-color="#ffd4c7"/>
-    </radialGradient>
-  </defs>
-  <circle cx="20" cy="20" r="18" fill="url(#g)" stroke="#e9b8a7" stroke-width="2"/>
-  <circle cx="20" cy="20" r="7" fill="#fffaf3" stroke="#f0d6cb" stroke-width="2"/>
-  <circle cx="12" cy="12" r="2" fill="#f58b7a"/>
-  <circle cx="26" cy="10" r="2" fill="#a68cf0"/>
-  <circle cx="30" cy="22" r="2" fill="#7cc9a5"/>
-  <circle cx="14" cy="28" r="2" fill="#ffc34d"/>
-</svg>`);
-
 const ICONS: Record<string, string> = {
   donut: 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><radialGradient id="g" cx="50%" cy="50%"><stop offset="0%" stop-color="#fff4e6"/><stop offset="100%" stop-color="#ffd4c7"/></radialGradient></defs><circle cx="20" cy="20" r="18" fill="url(#g)" stroke="#e9b8a7" stroke-width="2"/><circle cx="20" cy="20" r="7" fill="#fffaf3" stroke="#f0d6cb" stroke-width="2"/></svg>`),
   coffee: 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect x="8" y="12" width="24" height="16" rx="4" fill="#8B5E3C"/><rect x="6" y="10" width="28" height="4" rx="2" fill="#C9B29A"/><rect x="12" y="14" width="16" height="10" rx="2" fill="#FFF8F2"/></svg>`),
@@ -61,8 +42,9 @@ const ICONS: Record<string, string> = {
   star: 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><path d="M20 6l4.2 8.5 9.3 1.3-6.7 6.5 1.6 9.2L20 27.5 11.6 31.5l1.6-9.2-6.7-6.5 9.3-1.3z" fill="#F6C948"/></svg>`),
 };
 
-function iconFor(type?: string | null): string {
-  return type && ICONS[type] ? ICONS[type] : ICONS.donut; // default donut
+function iconFor(type?: string | null): string | null {
+  if (!type) return null;
+  return ICONS[type] ?? null;
 }
 
 
@@ -314,21 +296,21 @@ export default function Page() {
 
               {/* labels/icons, attached to slices via full-size ring */}
               {labels.map((l, idx) => {
-                // If upright === true, counter-rotate so text faces up after the spin.
-                // If upright === false, let them spin with the wheel.
-                const innerRotate = 90;
+                const innerRotate = 90; // vertical orientation
+                const iconType = (wedges[idx] as any)?.iconType;
+                const src = iconFor(iconType); // <— define here
 
                 return (
                   <div
                     key={idx}
                     style={{
-                      ...labelRing,                      // <- full-size ring (inset: 0)
-                      transform: `rotate(${l.mid}deg)`,  // rotate ring to the slice center
+                      ...labelRing,
+                      transform: `rotate(${l.mid}deg)`,
                     }}
                   >
                     <div
                       style={{
-                        ...labelAtTop,                   // <- anchored by top: % relative to WHEEL
+                        ...labelAtTop,
                         transform: `translateX(-50%) rotate(${innerRotate}deg)`,
                         display: "flex",
                         flexDirection: "column",
@@ -337,19 +319,21 @@ export default function Page() {
                       }}
                       title={labels[idx]?.text ?? "Hədiyyə"}
                     >
-                      <img
-                        src={iconFor((wedges[idx] as any)?.iconType)}
-                        alt=""
-                        style={{
-                          width: 36,
-                          height: 36,
-                          objectFit: "contain",
-                          marginBottom: 6,
-                          filter: "drop-shadow(0 1px 1px rgba(0,0,0,.15))",
-                          pointerEvents: "none",
-                          userSelect: "none",
-                        }}
-                      />
+                      {src && (
+                        <img
+                          src={src}
+                          alt=""
+                          style={{
+                            width: 36,
+                            height: 36,
+                            objectFit: "contain",
+                            marginBottom: 6,
+                            filter: "drop-shadow(0 1px 1px rgba(0,0,0,.15))",
+                            pointerEvents: "none",
+                            userSelect: "none",
+                          }}
+                        />
+                      )}
                       <span style={labelChip}>{labels[idx]?.text ?? "Hədiyyə"}</span>
                     </div>
                   </div>
