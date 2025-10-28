@@ -59,9 +59,9 @@ def require_admin(authorization: str | None = Header(default=None, alias="Author
     try:
         payload = jwt.decode(token, settings.jwt_secret, algorithms=[ALGO])
     except JWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Yanlış token")
     if payload.get("role") != "admin":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not an admin")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin deyilsiniz")
     return True
 
 
@@ -135,14 +135,14 @@ def spin(payload: SpinRequest, db: Session = Depends(get_db)):
     # require all 3 inputs (pydantic already enforces)
     phone_norm = normalize_phone(payload.phone)
     if len(phone_norm) < 7:
-        raise HTTPException(status_code=422, detail="Phone number looks invalid")
+        raise HTTPException(status_code=422, detail="Telefon nömrəsi etibarsız görünür")
 
     # find existing user by either
     by_phone = db.query(User).filter(User.phone == phone_norm).first()
     by_device = db.query(User).filter(User.device_hash == payload.device_hash).first()
 
     if by_device and by_phone and by_device.id != by_phone.id:
-        raise HTTPException(status_code=409, detail="Phone belong to different users")
+        raise HTTPException(status_code=409, detail="Bu cihaz və telefon nömrəsi fərqli istifadəçilərə aiddir.")
 
     user = by_phone or by_device
     if not user:
@@ -197,7 +197,7 @@ def spin(payload: SpinRequest, db: Session = Depends(get_db)):
 
             return SpinResponse(
                 status="existing_active",
-                message="You already spun — here’s your code.",
+                message="Artıq fırlatmısınız — kodunuz budur.",
                 prize_name=p.name if p else None,
                 prize_type=p.type if p else None,
                 prize_value=p.value if p else None,
@@ -226,7 +226,7 @@ def spin(payload: SpinRequest, db: Session = Depends(get_db)):
         if next_spin_at and now < next_spin_at:
             return SpinResponse(
                 status="already_redeemed",
-                message="You already used your last code.",
+                message="Siz artıq sonuncu kodunuzu istifadə etmisiniz.",
                 redeemed_at=ra,
                 next_spin_at=next_spin_at,
             )
@@ -241,7 +241,7 @@ def spin(payload: SpinRequest, db: Session = Depends(get_db)):
         if next_spin_at and now < next_spin_at:
             return SpinResponse(
                 status="expired",
-                message="Your previous code expired.",
+                message="Əvvəlki kodunuzun müddəti bitib.",
                 expires_at=latest_code.expires_at if latest_code.expires_at else None,
                 next_spin_at=next_spin_at,
             )
@@ -254,7 +254,7 @@ def spin(payload: SpinRequest, db: Session = Depends(get_db)):
         if now < next_spin_at:
             return SpinResponse(
                 status="cooldown",
-                message=f"Already spun within {settings.spin_cooldown_hours}h.",
+                message=f"{settings.spin_cooldown_hours} saatlıq gözləmə müddətindəsiniz.",
                 next_spin_at=next_spin_at,
             )
 
@@ -262,7 +262,7 @@ def spin(payload: SpinRequest, db: Session = Depends(get_db)):
     available = db.query(Prize).filter(Prize.active == True, Prize.weight > 0).all()
     if not available:
         # No admin-configured prizes to draw from
-        raise HTTPException(status_code=503, detail="No active prizes configured. Ask staff.")
+        raise HTTPException(status_code=503, detail="Aktiv mükafat yoxdur. İşçilərdən soruşun.")
     prize = weighted_choice(available)
 
 
@@ -286,7 +286,7 @@ def spin(payload: SpinRequest, db: Session = Depends(get_db)):
             code_obj = None
 
     if not code_obj:
-        raise HTTPException(status_code=500, detail="Could not generate a unique code, please try again.")
+        raise HTTPException(status_code=500, detail="Təkraredilməz kod yaradıla bilmədi, yenidən cəhd edin.")
 
 
     # Determine the wheel position (index) for the drawn prize
@@ -302,7 +302,7 @@ def spin(payload: SpinRequest, db: Session = Depends(get_db)):
 
     return SpinResponse(
     status="new",
-    message="Here’s your reward code!",
+    message="Təbriklər! Yeni kodunuz yaradıldı.",
     prize_name=prize.name,
     prize_type=prize.type,
     prize_value=prize.value,
@@ -350,11 +350,11 @@ def admin_redeem(payload: RedeemRequest, db: Session = Depends(get_db), _=Depend
 @app.post("/api/status", response_model=StatusResponse)
 def status(payload: StatusRequest, db: Session = Depends(get_db)):
     if not (payload.phone or payload.device_hash):
-        return StatusResponse(status="none", message="Provide an identifier to check status.")
+        return StatusResponse(status="none", message="Statusu yoxlamaq üçün identifikator təqdim edin.")
 
     user = find_user(db, None, payload.phone, payload.device_hash)
     if not user:
-        return StatusResponse(status="none", message="No spins or codes found for this user.")
+        return StatusResponse(status="none", message="Bu istifadəçi üçün heç bir fırlanma və ya kod tapılmadı.")
 
     now = utcnow()
     latest_code = (
@@ -375,7 +375,7 @@ def status(payload: StatusRequest, db: Session = Depends(get_db)):
             p = db.query(Prize).filter(Prize.id == latest_code.prize_id).first()
             return StatusResponse(
                 status="existing_active",
-                message="You already have an active code.",
+                message="Sizin aktiv kodunuz var.",
                 prize_name=p.name if p else None,
                 prize_type=p.type if p else None,
                 prize_value=p.value if p else None,
@@ -389,7 +389,7 @@ def status(payload: StatusRequest, db: Session = Depends(get_db)):
                 if next_spin_at.tzinfo is None: next_spin_at = next_spin_at.replace(tzinfo=timezone.utc)
             return StatusResponse(
                 status="already_redeemed",
-                message="Your last code was already redeemed.",
+                message="Kodunuzdan istifadə etmisiniz.",
                 redeemed_at=ra,
                 next_spin_at=next_spin_at,
             )
@@ -400,7 +400,7 @@ def status(payload: StatusRequest, db: Session = Depends(get_db)):
                 if next_spin_at.tzinfo is None: next_spin_at = next_spin_at.replace(tzinfo=timezone.utc)
             return StatusResponse(
                 status="expired",
-                message="Your last code expired.",
+                message="Kodunuzun etibarlılıq müddəti bitib.",
                 expires_at=exp,
                 next_spin_at=next_spin_at,
             )
@@ -412,16 +412,16 @@ def status(payload: StatusRequest, db: Session = Depends(get_db)):
         if now < next_spin_at:
             return StatusResponse(
                 status="cooldown",
-                message="You’re on cooldown.",
+                message="Spin üçün gözləmə müddətindəsiniz.",
                 next_spin_at=next_spin_at,
             )
 
-    return StatusResponse(status="none", message="No active code.")
+    return StatusResponse(status="none", message="Aktiv kodunuz yoxdur.")
 
 @app.post("/api/resend", response_model=ResendResponse)
 def resend(_: ResendRequest):
     # Email/SMS delivery is turned off
-    return ResendResponse(ok=False, message="Delivery is disabled.")
+    return ResendResponse(ok=False, message="Göndərmə xidməti mövcud deyil.")
 
 
 @app.post("/api/admin/login", response_model=AdminLoginResponse)
@@ -431,7 +431,7 @@ def admin_login(body: AdminLoginRequest, request: Request):
 
     if not verify_admin_password(body.password):
         _mark_fail(ip)
-        raise HTTPException(status_code=401, detail="Wrong password")
+        raise HTTPException(status_code=401, detail="Yanlış parol")
 
     _clear_fail(ip)
     return AdminLoginResponse(token=make_admin_token())
@@ -447,7 +447,7 @@ def _rate_limit(ip: str):
     arr = [x for x in _failed.get(ip, []) if t - x < WINDOW_SEC]
     _failed[ip] = arr
     if len(arr) >= MAX_ATTEMPTS:
-        raise HTTPException(status_code=429, detail="Too many attempts. Try later.")
+        raise HTTPException(status_code=429, detail="Çox sayda uğursuz giriş cəhdi, sonrakı cəhd üçün gözləyin.")
 
 def _mark_fail(ip: str):
     _failed.setdefault(ip, []).append(_now_s())
@@ -523,7 +523,7 @@ def admin_set_prizes(payload: PrizesSetRequest, db: Session = Depends(get_db), _
     # Validate there is at least one active prize with weight > 0
     active_with_weight = [p for p in payload.prizes if p.active and p.weight > 0]
     if not active_with_weight:
-        raise HTTPException(status_code=422, detail="At least one active prize with weight > 0 is required.")
+        raise HTTPException(status_code=422, detail="ən azı bir aktiv mükafat olmalıdır (aktiv və çəkisi > 0).")
 
     # Map incoming by id (when present)
     incoming_by_id = {p.id: p for p in payload.prizes if p.id}
@@ -580,7 +580,7 @@ def admin_set_prizes(payload: PrizesSetRequest, db: Session = Depends(get_db), _
         created=created,
         updated=updated,
         deactivated=deactivated,
-        message=f"Saved. Created {created}, updated {updated}, deactivated {deactivated}."
+        message=f"Yadda saxlanıldı. Yaradıldı {created}, yeniləndi {updated}, deaktiv edildi {deactivated}."
     )
 
 from sqlalchemy import func
@@ -593,7 +593,7 @@ def admin_delete_prize(
 ):    
     p = db.query(Prize).filter(Prize.id == prize_id).first()
     if not p:
-        raise HTTPException(status_code=404, detail="Prize not found")
+        raise HTTPException(status_code=404, detail="Hədiyyə tapılmadı.")
 
     # Check references
     code_cnt = db.query(func.count(Code.id)).filter(Code.prize_id == prize_id).scalar() or 0
@@ -602,7 +602,7 @@ def admin_delete_prize(
     if code_cnt or spin_cnt:
         raise HTTPException(
             status_code=409,
-            detail="Prize is in use (codes/spins exist). Deactivate it instead."
+            detail="Hədiyyə istifadədədir (kodlar/fırlanmalar mövcuddur). Bunun əvəzinə onu deaktiv edin."
         )
 
     db.delete(p)
