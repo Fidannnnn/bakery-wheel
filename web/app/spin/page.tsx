@@ -271,7 +271,7 @@ export default function Page() {
       <main style={card}>
         <header style={head}>
           <div>
-            <h1 style={{ margin: 0, fontSize: 24, color: "#4a2e2a" }}>Bakery Wheel</h1>
+            <h1 style={{ margin: 0, fontSize: 24, color: "#4a2e2a" }}>Ravira Çarxı</h1>
             <small style={{ opacity: .75, color: "#6b4a43" }}>
               Daxil olmusunuz: <b>{fullName}</b> · <a href="/login?next=/spin" style={{ color: "#b24a3b" }}>dəyiş</a>
             </small>
@@ -428,7 +428,6 @@ export default function Page() {
   );
 }
 
-/* ---------- theme styles (warm bakery palette) ---------- */
 
 const wrap: React.CSSProperties = {
   minHeight: "100dvh",
@@ -436,7 +435,7 @@ const wrap: React.CSSProperties = {
   display: "grid",
   placeItems: "center",
   padding: 24,
-  color: "#3f2a26",
+  color: "#ffffff", // global text color for readability
 };
 
 const card: React.CSSProperties = {
@@ -444,9 +443,9 @@ const card: React.CSSProperties = {
   maxWidth: 980,
   borderRadius: 18,
   background: "rgba(255, 255, 255, 0.05)",
-  border: "1px solid rgba(255,255,255,0.1)",
-  color: "#fff",
-  boxShadow: "0 10px 40px rgba(119,72,57,.12)",
+  border: "1px solid rgba(255,255,255,0.15)",
+  color: "#f8f8ff", // off-white text for contrast
+  boxShadow: "0 10px 40px rgba(255,255,255,0.05)",
   padding: 24,
   display: "grid",
   gap: 18,
@@ -457,13 +456,14 @@ const head: React.CSSProperties = {
   alignItems: "baseline",
   justifyContent: "space-between",
   gap: 12,
+  color: "#FFD93B", // golden header text
 };
 
 const wheelRow: React.CSSProperties = {
   display: "grid",
   gap: 16,
-  gridTemplateColumns: "1fr",   // one column
-  justifyItems: "center",       // center wheel & buttons
+  gridTemplateColumns: "1fr",
+  justifyItems: "center",
   alignItems: "center",
 };
 
@@ -473,7 +473,6 @@ const buttonStack: React.CSSProperties = {
   justifyItems: "center",
   marginTop: 6,
 };
-
 
 const wheelWrap: React.CSSProperties = {
   position: "relative",
@@ -485,15 +484,15 @@ const wheelWrap: React.CSSProperties = {
 const pointer: React.CSSProperties = {
   position: "absolute",
   left: "50%",
-  bottom: "-22px",                 // sit just outside the rim
+  bottom: "-22px",
   transform: "translateX(-50%)",
   width: 0,
   height: 0,
   borderLeft: "18px solid transparent",
   borderRight: "18px solid transparent",
-  borderBottom: "28px solid #b24a3b", // arrow color
-  filter: "drop-shadow(0 6px 10px rgba(0,0,0,.18))",
-  zIndex: 6,                    // on top of everything
+  borderBottom: "28px solid #FFD93B", // gold pointer
+  filter: "drop-shadow(0 6px 10px rgba(255,215,59,0.3))",
+  zIndex: 6,
 };
 
 const wheelBase: React.CSSProperties = {
@@ -502,7 +501,7 @@ const wheelBase: React.CSSProperties = {
   margin: "auto",
   borderRadius: "50%",
   border: "14px solid #ff3b2e",
-  boxShadow: "0 0 30px rgba(255,59,46,0.6)",
+  boxShadow: "0 0 40px rgba(255,59,46,0.6)",
   zIndex: 0,
 };
 
@@ -513,9 +512,9 @@ const hub: React.CSSProperties = {
   width: "28%",
   height: "28%",
   borderRadius: "50%",
-  background: "#fff7f2",
-  border: "6px solid #f3dfcc",
-  boxShadow: "inset 0 2px 4px rgba(0,0,0,.08)",
+  background: "#16172a",
+  border: "6px solid rgba(255,255,255,0.2)",
+  boxShadow: "inset 0 2px 8px rgba(0,0,0,.4)",
   zIndex: 2,
 };
 
@@ -527,16 +526,16 @@ const labelBase: React.CSSProperties = {
   textAlign: "center",
   pointerEvents: "none",
   userSelect: "none",
-  zIndex: 3,                    // labels above wheel, below pointer
+  zIndex: 3,
 };
 
 const labelChip: React.CSSProperties = {
   display: "inline-block",
   padding: "4px 8px",
   borderRadius: 10,
-  background: "rgba(255,255,255,0.96)",
-  border: "1px solid rgba(0,0,0,0.08)",
-  color: "#2b140f",
+  background: "rgba(0,0,0,0.55)",
+  border: "1px solid rgba(255,255,255,0.25)",
+  color: "#fff",
   fontWeight: 700,
   fontSize: "clamp(11px, 1.5vw, 13px)",
   lineHeight: 1.15,
@@ -547,40 +546,41 @@ const labelChip: React.CSSProperties = {
   zIndex: 5,
 };
 
-
 const ctaCol: React.CSSProperties = {
   display: "grid",
   gap: 12,
   alignContent: "start",
+  color: "#FFEBCD", // light beige for contrast
 };
 
 const resultBox: React.CSSProperties = {
-  border: "1px solid #f1e1cf",
-  background: "#fffdf8",
+  border: "1px solid rgba(255,255,255,0.2)",
+  background: "rgba(255,255,255,0.08)",
   padding: 14,
   borderRadius: 14,
   display: "grid",
   gap: 8,
+  color: "#fff",
 };
 
 const codePill: React.CSSProperties = {
   display: "inline-block",
   padding: "6px 10px",
   borderRadius: 10,
-  background: "#fff3ea",
-  border: "1px solid #f1d3c9",
+  background: "rgba(255,255,255,0.12)",
+  border: "1px solid rgba(255,255,255,0.3)",
   fontWeight: 700,
   letterSpacing: 0.2,
-  color: "#5a352f",
+  color: "#FFD93B",
 };
 
 const btnPrimary: React.CSSProperties = {
   padding: "12px 20px",
   borderRadius: 12,
-  background: "linear-gradient(180deg,#ff3b2e 0%,#ff7b00 100%)",
+  background: "linear-gradient(180deg,#ff7b00 0%,#ff3b2e 100%)",
   border: "1px solid #ffb300",
   color: "#fff",
-  boxShadow: "0 10px 25px rgba(255,59,46,.4)",
+  boxShadow: "0 10px 25px rgba(255,59,46,.5)",
   fontWeight: 700,
   cursor: "pointer",
 };
@@ -588,9 +588,9 @@ const btnPrimary: React.CSSProperties = {
 const btnSecondary: React.CSSProperties = {
   padding: "10px 16px",
   borderRadius: 12,
-  background: "linear-gradient(180deg,#303050 0%,#1a1a2a 100%)",
-  border: "1px solid #555",
-  color: "#fff",
+  background: "linear-gradient(180deg,#2a2a50 0%,#1a1a2a 100%)",
+  border: "1px solid rgba(255,255,255,0.2)",
+  color: "#f0f0ff",
   fontWeight: 600,
   cursor: "pointer",
 };
@@ -598,16 +598,16 @@ const btnSecondary: React.CSSProperties = {
 const btnMini: React.CSSProperties = {
   padding: "6px 10px",
   borderRadius: 10,
-  border: "1px solid #e8d7c4",
-  background: "#fff9f1",
-  color: "#6b4a43",
+  border: "1px solid rgba(255,255,255,0.3)",
+  background: "rgba(255,255,255,0.1)",
+  color: "#fff",
   cursor: "pointer",
   fontSize: 13,
 };
 
 const labelRay: React.CSSProperties = {
   position: "absolute",
-  inset: 0,                    // full wheel size
+  inset: 0,
   borderRadius: "50%",
   pointerEvents: "none",
   zIndex: 4,
@@ -616,7 +616,7 @@ const labelRay: React.CSSProperties = {
 const labelSpot: React.CSSProperties = {
   position: "absolute",
   left: "50%",
-  top: "13%",                  // distance from rim (8–14% works well)
+  top: "13%",
   transform: "translateX(-50%)",
 };
 
@@ -626,7 +626,6 @@ const spinLayer: React.CSSProperties = {
   borderRadius: "50%",
 };
 
-// Full-size layer we rotate to the slice angle.
 const labelRing: React.CSSProperties = {
   position: "absolute",
   inset: 0,
@@ -635,12 +634,12 @@ const labelRing: React.CSSProperties = {
   zIndex: 3,
 };
 
-// The “anchor” at the top of the wheel; % here is relative to the WHEEL size.
 const labelAtTop: React.CSSProperties = {
   position: "absolute",
-  top: "9%",           // distance from rim → adjust 6–12% to taste
+  top: "9%",
   left: "50%",
   transform: "translateX(-50%)",
   display: "grid",
   placeItems: "center",
+  color: "#FFD93B", // golden accent label
 };
