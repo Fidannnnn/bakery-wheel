@@ -481,19 +481,23 @@ const wheelWrap: React.CSSProperties = {
   overflow: "visible",
 };
 
+// same % as logoHub width/height
+const HUB_PCT = 32; // ← keep in sync with logoHub width/height
+
 const pointer: React.CSSProperties = {
   position: "absolute",
   left: "50%",
-  top: "50%",
-  transform: "translateX(-50%, -180%)",
+  top: `calc(50% - ${HUB_PCT / 2}% - 2px)`, // sit on the outer edge of the hub
+  transform: "translateX(-50%)",
   width: 0,
   height: 0,
   borderLeft: "18px solid transparent",
   borderRight: "18px solid transparent",
-  borderTop: "32px solid #FFD93B", // gold pointer
+  borderTop: "32px solid #FFD93B", // triangle pointing toward the wheel
   filter: "drop-shadow(0 6px 10px rgba(255,215,59,0.3))",
-  zIndex: 6,
+  zIndex: 8,
 };
+
 
 const wheelBase: React.CSSProperties = {
   position: "absolute",
