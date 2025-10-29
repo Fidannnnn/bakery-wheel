@@ -29,7 +29,7 @@ type Wedge = { id?: number; name: string; start: number; end: number; mid: numbe
 
 const norm = (x: number) => ((x % 360) + 360) % 360;
 
-const POINTER_DEG = 270;
+const POINTER_DEG = 180;
 
 const ICONS: Record<string, string> = {
   coffee: "/icons/coffee.png",
