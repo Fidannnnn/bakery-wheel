@@ -20,6 +20,7 @@ class Settings(BaseModel):
     jwt_secret: str = os.getenv("JWT_SECRET", "dev_change_me")
     code_expiry_hours: float = float(os.getenv("CODE_EXPIRY_HOURS", "168"))
     spin_cooldown_hours: float = float(os.getenv("SPIN_COOLDOWN_HOURS", "168"))
+    allow_spin_after_expire: bool = (os.getenv("ALLOW_SPIN_AFTER_EXPIRE", "true").lower() == "true")
     allowed_origins: list[str] = [
         o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o.strip()
     ]    

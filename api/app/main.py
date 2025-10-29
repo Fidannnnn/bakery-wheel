@@ -19,7 +19,7 @@ from .schemas import PrizeIn, PrizeOut, PrizesSetRequest, PrizesSetResponse
 from .utils import weighted_choice, gen_code, send_reward_email, send_reward_sms
 
 from jose import jwt, JWTError
-from fastapi import Header, status
+from fastapi import Header, status, func 
 
 import bcrypt, secrets
 
@@ -30,6 +30,19 @@ def utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 ALGO = "HS256"
+def get_active_code(db: Session, user_id: int) -> Code | None:
+    """Return the newest unexpired, unredeemed code for the user."""
+    return (
+        db.query(Code)
+          .filter(
+              Code.user_id == user_id,
+              Code.status == "issued",
+              Code.expires_at > func.now()
+          )
+          .order_by(Code.issued_at.desc())
+          .first()
+    )
+
 
 def make_admin_token() -> str:
     exp = int(utcnow().timestamp()) + settings.admin_token_hours * 3600
@@ -232,22 +245,41 @@ def spin(payload: SpinRequest, db: Session = Depends(get_db)):
             )
 
     # 3) If last code expired, either still cooldown or proceed
-    if latest_code and (latest_code.status == "expired" or (latest_code.expires_at and latest_code.expires_at <= now)):
-        next_spin_at = None
-        if latest_spin:
-            next_spin_at = latest_spin.created_at + timedelta(hours=settings.spin_cooldown_hours)
-            if next_spin_at.tzinfo is None:
-                next_spin_at = next_spin_at.replace(tzinfo=timezone.utc)
-        if next_spin_at and now < next_spin_at:
-            return SpinResponse(
-                status="expired",
-                message="Əvvəlki kodunuzun müddəti bitib.",
-                expires_at=latest_code.expires_at if latest_code.expires_at else None,
-                next_spin_at=next_spin_at,
-            )
+    # 3) If last code expired, optionally allow immediate spin
+    expired_now = (
+        latest_code
+        and (
+            latest_code.status == "expired"
+            or (latest_code.expires_at and latest_code.expires_at <= now)
+        )
+    )
+
+    if expired_now:
+        # idempotently mark as expired if it crossed the boundary just now
+        if latest_code.status != "expired":
+            latest_code.status = "expired"
+            db.commit()
+
+        # IMPORTANT: if policy says so, do NOT gate with cooldown here — just continue to issue a new spin
+        if settings.allow_spin_after_expire:
+            pass  # fall through to Step 5 (fresh spin)
+        else:
+            # old behavior (keep cooldown)
+            next_spin_at = None
+            if latest_spin:
+                next_spin_at = latest_spin.created_at + timedelta(hours=settings.spin_cooldown_hours)
+                if next_spin_at.tzinfo is None:
+                    next_spin_at = next_spin_at.replace(tzinfo=timezone.utc)
+            if next_spin_at and now < next_spin_at:
+                return SpinResponse(
+                    status="expired",
+                    message="Əvvəlki kodunuzun müddəti bitib.",
+                    expires_at=latest_code.expires_at if latest_code.expires_at else None,
+                    next_spin_at=next_spin_at,
+                )
 
     # 4) If no active code, enforce cooldown before issuing a new one
-    if latest_spin:
+    if latest_spin and not (expired_now and settings.allow_spin_after_expire):
         next_spin_at = latest_spin.created_at + timedelta(hours=settings.spin_cooldown_hours)
         if next_spin_at.tzinfo is None:
             next_spin_at = next_spin_at.replace(tzinfo=timezone.utc)
@@ -394,16 +426,24 @@ def status(payload: StatusRequest, db: Session = Depends(get_db)):
                 next_spin_at=next_spin_at,
             )
         if latest_code.status == "expired" or (exp and exp <= now):
-            next_spin_at = None
-            if latest_spin:
-                next_spin_at = latest_spin.created_at + timedelta(hours=settings.spin_cooldown_hours)
-                if next_spin_at.tzinfo is None: next_spin_at = next_spin_at.replace(tzinfo=timezone.utc)
-            return StatusResponse(
-                status="expired",
-                message="Kodunuzun etibarlılıq müddəti bitib.",
-                expires_at=exp,
-                next_spin_at=next_spin_at,
-            )
+            if settings.allow_spin_after_expire:
+                return StatusResponse(
+                    status="expired",
+                    message="Kodunuzun etibarlılıq müddəti bitib — yenidən fırlada bilərsiniz.",
+                    expires_at=exp,
+                    next_spin_at=None,  # <- critical so UI text doesn’t suggest waiting
+                )
+            else:
+                next_spin_at = None
+                if latest_spin:
+                    next_spin_at = latest_spin.created_at + timedelta(hours=settings.spin_cooldown_hours)
+                    if next_spin_at.tzinfo is None: next_spin_at = next_spin_at.replace(tzinfo=timezone.utc)
+                return StatusResponse(
+                    status="expired",
+                    message="Kodunuzun etibarlılıq müddəti bitib.",
+                    expires_at=exp,
+                    next_spin_at=next_spin_at,
+                )
 
     # no code history; maybe on cooldown from a logged spin (rare)
     if latest_spin:
