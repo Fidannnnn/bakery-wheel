@@ -487,7 +487,7 @@ const HUB_PCT = 32; // ← keep in sync with logoHub width/height
 const pointer: React.CSSProperties = {
   position: "absolute",
   left: "50%",
-  top: `calc(50% - ${HUB_PCT / 2}% - 2px)`, // sit on the outer edge of the hub
+  top: `calc(50% - ${HUB_PCT / 2}% - 4px)`, // sit on the outer edge of the hub
   transform: "translateX(-50%)",
   width: 0,
   height: 0,
