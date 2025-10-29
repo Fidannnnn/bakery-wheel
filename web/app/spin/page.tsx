@@ -284,26 +284,32 @@ export default function Page() {
 
               {/* labels/icons, attached to slices via full-size ring */}
               {labels.map((l, idx) => {
-                const innerRotate = 90; // vertical orientation
                 const iconType = (wedges[idx] as any)?.iconType;
-                const src = iconFor(iconType); // <— define here
+                const src = iconFor(iconType);
+
+                // keep numbers small for smoother CSS
+                const wa = ((wheelAngle % 360) + 360) % 360;
 
                 return (
                   <div
                     key={idx}
                     style={{
                       ...labelRing,
+                      // rotate the ring so the anchor sits at the slice mid
                       transform: `rotate(${l.mid}deg)`,
                     }}
                   >
                     <div
                       style={{
                         ...labelAtTop,
-                        transform: `translateX(-50%) rotate(${innerRotate}deg)`,
+                        top: "12%",                           // how close to the rim (tweak 10–14)
+                        // counter-rotate by slice + wheel so text is always horizontal
+                        transform: `translateX(-50%) rotate(${-(l.mid + wa)}deg)`,
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
-                        justifyContent: "center",
+                        gap: 6,
+                        willChange: "transform",
                       }}
                       title={labels[idx]?.text ?? "Hədiyyə"}
                     >
@@ -312,21 +318,23 @@ export default function Page() {
                           src={src}
                           alt=""
                           style={{
-                            width: 36,
-                            height: 36,
+                            width: 40,
+                            height: 40,
                             objectFit: "contain",
-                            marginBottom: 6,
                             filter: "drop-shadow(0 1px 1px rgba(0,0,0,.15))",
                             pointerEvents: "none",
                             userSelect: "none",
+                            // keep icon horizontal too
+                            transform: "rotate(0deg)",
                           }}
                         />
                       )}
-                      <span style={labelChip}>{labels[idx]?.text ?? "Hədiyyə"}</span>
+                      <span style={labelText}>{labels[idx]?.text ?? "Hədiyyə"}</span>
                     </div>
                   </div>
                 );
               })}
+
 
             </div>
             <div style={logoHub}>
@@ -663,4 +671,14 @@ const labelAtTop: React.CSSProperties = {
   display: "grid",
   placeItems: "center",
   color: "#FFD93B", // golden accent label
+};
+
+const labelText: React.CSSProperties = {
+  fontWeight: 800,
+  fontSize: "clamp(12px, 1.8vw, 18px)",
+  letterSpacing: 0.3,
+  textTransform: "uppercase",
+  color: "#fff",
+  textShadow: "0 2px 4px rgba(0,0,0,.35)",
+  whiteSpace: "nowrap",
 };
