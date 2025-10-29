@@ -318,8 +318,8 @@ export default function Page() {
                           src={src}
                           alt=""
                           style={{
-                            width: 40,
-                            height: 40,
+                            width: 28,
+                            height: 28,
                             objectFit: "contain",
                             filter: "drop-shadow(0 1px 1px rgba(0,0,0,.15))",
                             pointerEvents: "none",
