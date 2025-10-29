@@ -345,8 +345,8 @@ export default function Page() {
             </div>
             <div style={logoHub}>
               <img
-                src="/logo.png"
-                alt="Le Grano"
+                src="/logo.jpeg"
+                alt="Ravira Bakery"
                 style={{
                   width: "100%",
                   height: "100%",
