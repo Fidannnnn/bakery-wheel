@@ -15,15 +15,18 @@ type Prize = {
 
 const ICON_OPTIONS = [
   { value: "", label: "(none)" },
-  { value: "donut", label: "Donut" },
-  { value: "coffee", label: "Coffee" },
-  { value: "croissant", label: "Croissant" },
-  { value: "cake", label: "Cake" },
-  { value: "cookie", label: "Cookie" },
-  { value: "percent", label: "Percent" },
-  { value: "gift", label: "Gift" },
-  { value: "star", label: "Star" },
+  { value: "coffee", label: "İstənilən kofe" },
+  { value: "croissant_choco", label: "Şokoladlı kruassan" },
+  { value: "coupon_3", label: "Kupon 3 AZN" },
+  { value: "cake_15", label: "Tort — 15 AZN" },
+  { value: "coupon_5", label: "Kupon 5 AZN" },
+  { value: "retry", label: "Bəxtini bir daha sına" },
+  { value: "tea_dessert", label: "Çay və desert" },
+  { value: "fast_food", label: "Fast food" },
+  { value: "birthday_cake_50", label: "Ad gününə tort 50%" },
+  { value: "all_50", label: "Bütün mallara 50%" },
 ];
+
 
 
 // UI row with a stable key

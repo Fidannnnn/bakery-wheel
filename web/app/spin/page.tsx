@@ -32,14 +32,16 @@ const norm = (x: number) => ((x % 360) + 360) % 360;
 const POINTER_DEG = 270;
 
 const ICONS: Record<string, string> = {
-  donut: 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><radialGradient id="g" cx="50%" cy="50%"><stop offset="0%" stop-color="#fff4e6"/><stop offset="100%" stop-color="#ffd4c7"/></radialGradient></defs><circle cx="20" cy="20" r="18" fill="url(#g)" stroke="#e9b8a7" stroke-width="2"/><circle cx="20" cy="20" r="7" fill="#fffaf3" stroke="#f0d6cb" stroke-width="2"/></svg>`),
-  coffee: 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect x="8" y="12" width="24" height="16" rx="4" fill="#8B5E3C"/><rect x="6" y="10" width="28" height="4" rx="2" fill="#C9B29A"/><rect x="12" y="14" width="16" height="10" rx="2" fill="#FFF8F2"/></svg>`),
-  croissant: 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><path d="M8 22c6-8 18-8 24 0-6 6-18 6-24 0z" fill="#F5C27A" stroke="#D7A45F"/></svg>`),
-  cake: 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect x="8" y="18" width="24" height="10" rx="2" fill="#FFD1DC"/><rect x="8" y="14" width="24" height="6" rx="2" fill="#FFF"/><circle cx="20" cy="14" r="3" fill="#FF8FA3"/></svg>`),
-  cookie: 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="#E5B77A"/><circle cx="14" cy="16" r="2" fill="#6B4F3A"/><circle cx="26" cy="18" r="2" fill="#6B4F3A"/><circle cx="18" cy="24" r="2" fill="#6B4F3A"/></svg>`),
-  percent: 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><line x1="10" y1="30" x2="30" y2="10" stroke="#b24a3b" stroke-width="3"/><circle cx="14" cy="14" r="4" fill="#ffd7cf"/><circle cx="26" cy="26" r="4" fill="#ffd7cf"/></svg>`),
-  gift: 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect x="8" y="16" width="24" height="18" rx="3" fill="#FFC7D1"/><rect x="18" y="16" width="4" height="18" fill="#E76A5A"/><rect x="8" y="20" width="24" height="4" fill="#E76A5A"/></svg>`),
-  star: 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><path d="M20 6l4.2 8.5 9.3 1.3-6.7 6.5 1.6 9.2L20 27.5 11.6 31.5l1.6-9.2-6.7-6.5 9.3-1.3z" fill="#F6C948"/></svg>`),
+  coffee: "/icons/coffee.png",
+  croissant_choco: "/icons/croissant_choco.png",
+  coupon_3: "/icons/coupon_3.png",
+  cake_15: "/icons/cake_15.png",
+  coupon_5: "/icons/coupon_5.png",
+  retry: "/icons/retry.png",
+  tea_dessert: "/icons/tea_dessert.png",
+  fast_food: "/icons/fast_food.png",
+  birthday_cake_50: "/icons/birthday_cake_50.png",
+  all_50: "/icons/all_50.png",
 };
 
 function iconFor(type?: string | null): string | null {
@@ -176,8 +178,7 @@ export default function Page() {
       const mid = k * slice + slice / 2;
 
       // pick where your pointer lives: top = 270°, bottom = 180°
-      const POINTER_DEG = 180;   // ← set to 180 if you want the pointer at bottom
-      const TURNS = 6;           // full extra turns for drama
+      const TURNS = 4;           // full extra turns for drama
 
       const current = norm(wheelAngle);
       const targetStop = norm(POINTER_DEG - mid);
@@ -341,7 +342,20 @@ export default function Page() {
                 );
               })}
 
-              <div style={hub} />
+            </div>
+            <div style={logoHub}>
+              <img
+                src="/logo.png"
+                alt="Le Grano"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                  filter: "drop-shadow(0 1px 2px rgba(0,0,0,.25))",
+                  pointerEvents: "none",
+                  userSelect: "none",
+                }}
+              />
             </div>
           </div>
 
@@ -484,13 +498,13 @@ const wheelWrap: React.CSSProperties = {
 const pointer: React.CSSProperties = {
   position: "absolute",
   left: "50%",
-  bottom: "-22px",
-  transform: "translateX(-50%)",
+  top: "50%",
+  transform: "translateX(-50%, -35%)",
   width: 0,
   height: 0,
   borderLeft: "18px solid transparent",
   borderRight: "18px solid transparent",
-  borderBottom: "28px solid #FFD93B", // gold pointer
+  borderTop: "32px solid #FFD93B", // gold pointer
   filter: "drop-shadow(0 6px 10px rgba(255,215,59,0.3))",
   zIndex: 6,
 };
@@ -509,14 +523,31 @@ const hub: React.CSSProperties = {
   position: "absolute",
   inset: 0,
   margin: "auto",
-  width: "28%",
-  height: "28%",
+  width: "32%",
+  height: "32%",
   borderRadius: "50%",
   background: "#16172a",
   border: "6px solid rgba(255,255,255,0.2)",
   boxShadow: "inset 0 2px 8px rgba(0,0,0,.4)",
   zIndex: 2,
 };
+
+const logoHub: React.CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  margin: "auto",
+  width: "32%",
+  height: "32%",
+  borderRadius: "50%",
+  background: "radial-gradient(circle at 50% 45%, #fff 0%, #f6f6f6 60%, #e7e7e7 100%)",
+  border: "6px solid #d9c5a0",
+  boxShadow: "inset 0 2px 6px rgba(0,0,0,.15), 0 3px 10px rgba(0,0,0,.3)",
+  display: "grid",
+  placeItems: "center",
+  overflow: "hidden",
+  zIndex: 5,            // spinLayer ~1, pointer 6 → logo sits between them
+};
+
 
 const labelBase: React.CSSProperties = {
   position: "absolute",
