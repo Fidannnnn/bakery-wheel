@@ -3,7 +3,8 @@ from typing import Optional, List
 from fastapi import FastAPI, Depends, HTTPException, Request, Path
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError   
+from sqlalchemy.exc import IntegrityError  
+from sqlalchemy import func
 
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -19,7 +20,7 @@ from .schemas import PrizeIn, PrizeOut, PrizesSetRequest, PrizesSetResponse
 from .utils import weighted_choice, gen_code, send_reward_email, send_reward_sms
 
 from jose import jwt, JWTError
-from fastapi import Header, status, func 
+from fastapi import Header, status 
 
 import bcrypt, secrets
 
