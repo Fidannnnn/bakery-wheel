@@ -49,23 +49,11 @@ function iconFor(type?: string | null): string | null {
   return ICONS[type] ?? null;
 }
 
-
-
 function validateName(name: string) {
   const n = name.trim();
   if (!n || n.length < 2) return { ok: false, reason: "Ad çox qısadır." };
   if (!/^[\p{L} .'-]+$/u.test(n)) return { ok: false, reason: "Yalnız hərf və boşluqlardan istifadə edin." };
   return { ok: true };
-}
-
-function angleForMid(mid: number, currentAngle: number) {
-  const current = norm(currentAngle);
-  const baseTarget = norm(POINTER_DEG - mid);  // mid + A ≡ 270
-  let delta = norm(baseTarget - current);      // shortest positive move
-  // ensure it doesn't look like a micro-spin
-  if (delta < 30) delta += 360;
-  const turns = 360 * 5;                       // visual extra spins
-  return currentAngle + turns + delta;
 }
 
 export default function Page() {
@@ -103,8 +91,6 @@ export default function Page() {
     if (!fullName || !phone) return false;
     return validateName(fullName).ok && validatePhone(phone).ok;
   }, [fullName, phone]);
-
-  // require login
 
   // load active prizes for labels/wedges
   useEffect(() => {
@@ -499,7 +485,7 @@ const pointer: React.CSSProperties = {
   position: "absolute",
   left: "50%",
   top: "50%",
-  transform: "translateX(-50%, -35%)",
+  transform: "translateX(-50%, -180%)",
   width: 0,
   height: 0,
   borderLeft: "18px solid transparent",
