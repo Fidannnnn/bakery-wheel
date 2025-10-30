@@ -109,6 +109,19 @@ export default function Page() {
   // preload current status
   useEffect(() => { if (mounted && haveCreds) { refreshStatus(); } }, [mounted, haveCreds, fullName, phone]);
 
+  function fitLabel(text: string, limit = 12) {
+    const words = text.split(/\s+/);
+    const lines: string[] = [];
+    let line = "";
+    for (const w of words) {
+      const next = line ? line + " " + w : w;
+      if (next.length > limit && line) { lines.push(line); line = w; }
+      else { line = next; }
+    }
+    if (line) lines.push(line);
+    return lines.join("\n");      // we'll render with pre-wrap
+  }
+
   async function refreshStatus() {
     if (!phone) return;
     try {
@@ -329,7 +342,9 @@ export default function Page() {
                           }}
                         />
                       )}
-                      <span style={labelText}>{labels[idx]?.text ?? "Hədiyyə"}</span>
+                      <span style={{ ...labelChip, whiteSpace: "pre-wrap" }}>
+                        {fitLabel(labels[idx]?.text ?? "Hədiyyə", 11)}
+                      </span>
                     </div>
                   </div>
                 );
@@ -544,25 +559,6 @@ const logoHub: React.CSSProperties = {
   placeItems: "center",
   overflow: "hidden",
   zIndex: 5,            // spinLayer ~1, pointer 6 → logo sits between them
-};
-
-
-const labelBase: React.CSSProperties = {
-  position: "absolute",
-  left: "50%",
-  top: "50%",
-  transformOrigin: "50% 50%",
-  textAlign: "center",
-  pointerEvents: "none",
-  userSelect: "none",
-  zIndex: 3,
-};
-
-const ctaCol: React.CSSProperties = {
-  display: "grid",
-  gap: 12,
-  alignContent: "start",
-  color: "#FFEBCD", // light beige for contrast
 };
 
 const resultBox: React.CSSProperties = {
