@@ -558,23 +558,6 @@ const labelBase: React.CSSProperties = {
   zIndex: 3,
 };
 
-const labelChip: React.CSSProperties = {
-  display: "inline-block",
-  padding: "4px 8px",
-  borderRadius: 10,
-  background: "rgba(0,0,0,0.55)",
-  border: "1px solid rgba(255,255,255,0.25)",
-  color: "#fff",
-  fontWeight: 700,
-  fontSize: "clamp(11px, 1.5vw, 13px)",
-  lineHeight: 1.15,
-  textAlign: "center",
-  whiteSpace: "normal",
-  wordBreak: "break-word",
-  position: "relative",
-  zIndex: 5,
-};
-
 const ctaCol: React.CSSProperties = {
   display: "grid",
   gap: 12,
@@ -665,13 +648,38 @@ const labelRing: React.CSSProperties = {
 
 const labelAtTop: React.CSSProperties = {
   position: "absolute",
-  top: "9%",
+  top: "8.5%",                 // a touch farther from the hub (reduces collisions)
   left: "50%",
   transform: "translateX(-50%)",
-  display: "grid",
-  placeItems: "center",
-  color: "#FFD93B", // golden accent label
+  width: "34%",                // box width at this radius ≈ one slice chord
+  maxWidth: "34%",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  textAlign: "center",
+  pointerEvents: "none",
+  color: "#FFD93B",
 };
+
+const labelChip: React.CSSProperties = {
+  display: "inline-block",
+  padding: "3px 6px",
+  borderRadius: 10,
+  background: "rgba(0,0,0,0.55)",
+  border: "1px solid rgba(255,255,255,0.25)",
+  color: "#fff",
+  fontWeight: 700,
+  fontSize: "clamp(10px, 1.25vw, 14px)",  // slightly smaller + responsive
+  lineHeight: 1.2,
+  textAlign: "center",
+  whiteSpace: "normal",        // ← allow wrapping
+  wordBreak: "break-word",     // ← break long words
+  hyphens: "auto",             // ← let browser hyphenate if possible
+  position: "relative",
+  zIndex: 5,
+};
+
 
 const labelText: React.CSSProperties = {
   fontWeight: 800,
