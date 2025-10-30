@@ -317,7 +317,7 @@ export default function Page() {
                         ...labelAtTop,
                         top: "12%",                           // how close to the rim (tweak 10–14)
                         // counter-rotate by slice + wheel so text is always horizontal
-                        transform: `translateX(-50%) rotate(${-(l.mid + wa)}deg) translateY(10px)`,
+                        transform: `translateX(-50%) rotate(${-(l.mid + wa)}deg) translateY(5px)`,
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
