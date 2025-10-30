@@ -317,7 +317,7 @@ export default function Page() {
                         ...labelAtTop,
                         top: "12%",                           // how close to the rim (tweak 10–14)
                         // counter-rotate by slice + wheel so text is always horizontal
-                        transform: `translateX(-50%) rotate(${-(l.mid + wa)}deg) translateY(-6%)`,
+                        transform: `translateX(-50%) rotate(${-(l.mid + wa)}deg) translateY(10px)`,
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
@@ -532,19 +532,6 @@ const wheelBase: React.CSSProperties = {
   zIndex: 0,
 };
 
-const hub: React.CSSProperties = {
-  position: "absolute",
-  inset: 0,
-  margin: "auto",
-  width: "32%",
-  height: "32%",
-  borderRadius: "50%",
-  background: "#16172a",
-  border: "6px solid rgba(255,255,255,0.2)",
-  boxShadow: "inset 0 2px 8px rgba(0,0,0,.4)",
-  zIndex: 2,
-};
-
 const logoHub: React.CSSProperties = {
   position: "absolute",
   inset: 0,
@@ -629,7 +616,7 @@ const labelRing: React.CSSProperties = {
 
 const labelAtTop: React.CSSProperties = {
   position: "absolute",
-  top: "5%",                 // a touch farther from the hub (reduces collisions)
+  top: "3.5%",                 // a touch farther from the hub (reduces collisions)
   left: "50%",
   transform: "translateX(-50%)",
   width: "34%",                // box width at this radius ≈ one slice chord
@@ -645,7 +632,7 @@ const labelAtTop: React.CSSProperties = {
 
 const labelChip: React.CSSProperties = {
   display: "inline-block",
-  padding: "3px 6px",
+  padding: "3px 7px",
   borderRadius: 10,
   background: "rgba(0,0,0,0.55)",
   border: "1px solid rgba(255,255,255,0.25)",
@@ -659,6 +646,7 @@ const labelChip: React.CSSProperties = {
   hyphens: "auto",             // ← let browser hyphenate if possible
   position: "relative",
   zIndex: 5,
+  maxWidth: "34vw",
 };
 
 
