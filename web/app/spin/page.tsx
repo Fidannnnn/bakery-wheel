@@ -32,7 +32,7 @@ const norm = (x: number) => ((x % 360) + 360) % 360;
 const POINTER_DEG = 180;
 
 const LABEL_TOP_PCT = 2.5;       // smaller = closer to edge
-const LABEL_SHIFT_PX = -16;      // outward nudge in pixels
+const LABEL_SHIFT_PX = -5;      // outward nudge in pixels
 const ICON_SIZE = 28;
 
 const ICONS: Record<string, string> = {
