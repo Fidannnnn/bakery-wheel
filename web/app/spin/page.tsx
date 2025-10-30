@@ -31,6 +31,10 @@ const norm = (x: number) => ((x % 360) + 360) % 360;
 
 const POINTER_DEG = 180;
 
+const LABEL_TOP_PCT = 2.5;       // smaller = closer to edge
+const LABEL_SHIFT_PX = -16;      // outward nudge in pixels
+const ICON_SIZE = 28;
+
 const ICONS: Record<string, string> = {
   coffee: "/icons/coffee.png",
   croissant_choco: "/icons/croissant_choco.png",
@@ -317,7 +321,7 @@ export default function Page() {
                         ...labelAtTop,
                         top: "12%",                           // how close to the rim (tweak 10–14)
                         // counter-rotate by slice + wheel so text is always horizontal
-                        transform: `translateX(-50%) rotate(${-(l.mid + wa)}deg) translateY(5px)`,
+                        transform: `translateX(-50%) rotate(${-(l.mid + wa)}deg) translateY(${LABEL_SHIFT_PX}px)`,
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
@@ -331,8 +335,8 @@ export default function Page() {
                           src={src}
                           alt=""
                           style={{
-                            width: 28,
-                            height: 28,
+                            width: ICON_SIZE,
+                            height: ICON_SIZE,
                             objectFit: "contain",
                             filter: "drop-shadow(0 1px 1px rgba(0,0,0,.15))",
                             pointerEvents: "none",
@@ -616,28 +620,27 @@ const labelRing: React.CSSProperties = {
 
 const labelAtTop: React.CSSProperties = {
   position: "absolute",
-  top: "3.5%",                 // a touch farther from the hub (reduces collisions)
+  top: `${LABEL_TOP_PCT}%`, // bring closer to edge
   left: "50%",
-  transform: "translateX(-50%)",
-  width: "34%",                // box width at this radius ≈ one slice chord
-  maxWidth: "34%",
+  transform: `translateX(-50%) translateY(${LABEL_SHIFT_PX}px)`,
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
   textAlign: "center",
-  pointerEvents: "none",
   color: "#FFD93B",
 };
 
+
 const labelChip: React.CSSProperties = {
+  fontFamily: "'Montserrat','Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif",
+  fontWeight: 700,
   display: "inline-block",
   padding: "3px 7px",
   borderRadius: 10,
   background: "rgba(0,0,0,0.55)",
   border: "1px solid rgba(255,255,255,0.25)",
   color: "#fff",
-  fontWeight: 700,
   fontSize: "clamp(10px, 1.25vw, 14px)",  // slightly smaller + responsive
   lineHeight: 1.2,
   textAlign: "center",
