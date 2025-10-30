@@ -33,7 +33,7 @@ const POINTER_DEG = 180;
 
 const LABEL_TOP_PCT = 2.5;       // smaller = closer to edge
 const LABEL_SHIFT_PX = -5;      // outward nudge in pixels
-const ICON_SIZE = 28;
+const ICON_SIZE = 35;
 
 const ICONS: Record<string, string> = {
   coffee: "/icons/coffee.png",
@@ -275,7 +275,7 @@ export default function Page() {
       <main style={card}>
         <header style={head}>
           <div>
-            <h1 style={{ margin: 0, fontSize: 24, color: "#e0a89fff" }}>Ravira Çarxı</h1>
+            <h1 style={{ margin: 0, fontSize: 24, color: "#e0a89fff" }}>Hədiyyə Çarxı</h1>
             <small style={{ opacity: .75, color: "#e7c9c3ff" }}>
               Daxil olmusunuz: <b>{fullName}</b> · <a href="/login?next=/spin" style={{ color: "#b24a3b" }}>dəyiş</a>
             </small>
