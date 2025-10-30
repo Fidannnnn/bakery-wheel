@@ -339,7 +339,7 @@ export default function Page() {
             </div>
             <div style={logoHub}>
               <img
-                src="/logo.jpeg"
+                src="/logo.png"
                 alt="Ravira Bakery"
                 style={{
                   width: "100%",
