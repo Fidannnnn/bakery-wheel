@@ -613,21 +613,6 @@ const btnMini: React.CSSProperties = {
   fontSize: 13,
 };
 
-const labelRay: React.CSSProperties = {
-  position: "absolute",
-  inset: 0,
-  borderRadius: "50%",
-  pointerEvents: "none",
-  zIndex: 4,
-};
-
-const labelSpot: React.CSSProperties = {
-  position: "absolute",
-  left: "50%",
-  top: "13%",
-  transform: "translateX(-50%)",
-};
-
 const spinLayer: React.CSSProperties = {
   position: "absolute",
   inset: 0,
@@ -644,7 +629,7 @@ const labelRing: React.CSSProperties = {
 
 const labelAtTop: React.CSSProperties = {
   position: "absolute",
-  top: "8.5%",                 // a touch farther from the hub (reduces collisions)
+  top: "5%",                 // a touch farther from the hub (reduces collisions)
   left: "50%",
   transform: "translateX(-50%)",
   width: "34%",                // box width at this radius ≈ one slice chord
