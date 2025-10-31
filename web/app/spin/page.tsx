@@ -34,7 +34,7 @@ const POINTER_DEG = 180;
 const LABEL_TOP_PCT = 2.5;       // smaller = closer to edge
 const LABEL_SHIFT_PX = -5;      // outward nudge in pixels
 const OUTER_TEXT_TOP_PCT = 4;   // text radius (closer to rim)
-const INNER_ICON_TOP_PCT = 11;
+const INNER_ICON_TOP_PCT = 14;
 
 const ICONS: Record<string, string> = {
   coffee: "/icons/coffee.png",
@@ -337,8 +337,8 @@ export default function Page() {
                           left: "50%",
                           transform: `translateX(-50%) rotate(${LOCAL_TANGENT_DEG}deg)`,
                           transformOrigin: "50% 50%",
-                          width: 26,
-                          height: 26,
+                          width: 35,
+                          height: 35,
                           objectFit: "contain",
                           pointerEvents: "none",
                           userSelect: "none",
@@ -633,13 +633,20 @@ const labelChip: React.CSSProperties = {
 };
 
 const labelChipPreWrap: React.CSSProperties = {
-  ...labelChip,
-  whiteSpace: "pre-wrap",     // ← respect '\n' from fitLabel()
-  lineHeight: 1.15,
-  maxWidth: 140,              // consistent across slices
-  padding: "4px 8px",
+  fontFamily: "'Montserrat','Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif",
+  fontWeight: 700,
+  color: "#fff",
   fontSize: "clamp(10px, 1.2vw, 13px)",
+  lineHeight: 1.15,
+  whiteSpace: "pre-wrap",
+  textAlign: "center",
+  maxWidth: 140,
+  padding: "0",                // no extra box
+  background: "none",          // remove dark capsule
+  border: "none",              // no border
+  textShadow: "0 2px 4px rgba(0,0,0,.35)", // keep a soft glow for readability
 };
+
 
 
 const labelText: React.CSSProperties = {
