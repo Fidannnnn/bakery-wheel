@@ -31,10 +31,6 @@ export default function Home() {
               {label}
             </Link>
           </div>
-
-          <p style={hint}>
-            İlk girişdə kodu sizə göndərə bilmək üçün e-poçt və telefon nömrəniz istəniləcək.
-          </p>
         </div>
       </main>
     </div>

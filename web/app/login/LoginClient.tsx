@@ -112,7 +112,7 @@ export default function LoginClient({ next }: { next: string }) {
           </div>
 
           <small style={{ color: '#6b7280' }}>
-            Ad və telefon nömrənizi rahatlıq üçün yerli olaraq saxlayırıq. Sonradan dəyişə bilərsiniz.
+            Ad və telefon nömrənizi rahatlıq üçün yadda saxlayırıq. Sonradan dəyişə bilərsiniz.
           </small>
         </section>
       </main>
