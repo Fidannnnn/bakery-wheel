@@ -33,7 +33,8 @@ const POINTER_DEG = 180;
 
 const LABEL_TOP_PCT = 2.5;       // smaller = closer to edge
 const LABEL_SHIFT_PX = -5;      // outward nudge in pixels
-const ICON_SIZE = 35;
+const OUTER_TEXT_TOP_PCT = 4;   // text radius (closer to rim)
+const INNER_ICON_TOP_PCT = 11;
 
 const ICONS: Record<string, string> = {
   coffee: "/icons/coffee.png",
@@ -301,57 +302,53 @@ export default function Page() {
 
               {/* labels/icons, attached to slices via full-size ring */}
               {labels.map((l, idx) => {
-                const deg = l.mid;                 // slice center (0° = right, clockwise)
-                const tangent = deg - 90;          // baseline parallel to rim
+                const deg = l.mid;             // slice center (0° = right, clockwise)
+                const tangent = deg - 90;      // line parallel to rim
 
-                // Keep text readable: constrain rotation to [-90°, +90°]
-                let readable = tangent;
+                // keep text readable (never upside-down)
                 const norm = (x: number) => ((x % 360) + 360) % 360;
+                let readable = tangent;
                 const t = norm(tangent);
-                if (t > 90 && t < 270) readable = tangent - 180;   // flip 180° if upside-down
+                if (t > 90 && t < 270) readable = tangent - 180;
 
                 const iconType = (wedges[idx] as any)?.iconType;
                 const src = iconFor(iconType);
+                const text = fitLabel(labels[idx]?.text ?? "Hədiyyə", 13); // keep your 2-line wrap
 
                 return (
                   <div key={idx} style={{ ...labelRing, transform: `rotate(${deg}deg)` }}>
+                    {/* TEXT: locked to the rim radius, tangent orientation */}
                     <div
                       style={{
-                        ...labelAtTop,
-                        top: "5%",                                    // closer to edge (was 9%)
+                        position: "absolute",
+                        top: `${OUTER_TEXT_TOP_PCT}%`,
+                        left: "50%",
                         transform: `translateX(-50%) rotate(${readable}deg)`,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 6,
+                        pointerEvents: "none",
                       }}
                       title={labels[idx]?.text ?? "Hədiyyə"}
                     >
-                      {src && (
-                        <img
-                          src={src}
-                          alt=""
-                          style={{
-                            width: 24,                                 // a bit smaller
-                            height: 24,
-                            objectFit: "contain",
-                            // keep icon upright even when text flips:
-                            transform: `rotate(${-(readable)}deg)`,
-                            pointerEvents: "none",
-                            userSelect: "none",
-                          }}
-                        />
-                      )}
-                      <span
-                        style={{
-                          ...labelChip,
-                          fontSize: "clamp(10px, 1.3vw, 13px)",       // slightly smaller
-                          whiteSpace: "nowrap",
-                          maxWidth: "140px",
-                        }}
-                      >
-                        {labels[idx]?.text ?? "Hədiyyə"}
-                      </span>
+                      <span style={labelChipPreWrap}>{text}</span>
                     </div>
+
+                    {/* ICON: same tangent, but deeper (toward hub) */}
+                    {src && (
+                      <img
+                        src={src}
+                        alt=""
+                        style={{
+                          position: "absolute",
+                          top: `${INNER_ICON_TOP_PCT}%`,
+                          left: "50%",
+                          transform: `translateX(-50%) rotate(${readable}deg)`,
+                          width: 26,
+                          height: 26,
+                          objectFit: "contain",
+                          pointerEvents: "none",
+                          userSelect: "none",
+                        }}
+                      />
+                    )}
                   </div>
                 );
               })}
@@ -618,20 +615,6 @@ const labelRing: React.CSSProperties = {
   zIndex: 3,
 };
 
-const labelAtTop: React.CSSProperties = {
-  position: "absolute",
-  top: `${LABEL_TOP_PCT}%`, // bring closer to edge
-  left: "50%",
-  transform: `translateX(-50%) translateY(${LABEL_SHIFT_PX}px)`,
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  textAlign: "center",
-  color: "#FFD93B",
-};
-
-
 const labelChip: React.CSSProperties = {
   fontFamily: "'Montserrat','Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif",
   fontWeight: 700,
@@ -650,6 +633,15 @@ const labelChip: React.CSSProperties = {
   position: "relative",
   zIndex: 5,
   maxWidth: "34vw",
+};
+
+const labelChipPreWrap: React.CSSProperties = {
+  ...labelChip,
+  whiteSpace: "pre-wrap",     // ← respect '\n' from fitLabel()
+  lineHeight: 1.15,
+  maxWidth: 140,              // consistent across slices
+  padding: "4px 8px",
+  fontSize: "clamp(10px, 1.2vw, 13px)",
 };
 
 
