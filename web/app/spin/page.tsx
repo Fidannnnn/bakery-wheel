@@ -302,18 +302,8 @@ export default function Page() {
 
               {/* labels/icons, attached to slices via full-size ring */}
               {labels.map((l, idx) => {
-                const deg = l.mid;                // slice center (parent rotation)
-                const norm = (x: number) => ((x % 360) + 360) % 360;
-
-                // Tangent in GLOBAL space (parallel to rim)
-                const globalTangent = norm(deg + 90);
-
-                // Keep text upright: flip if it would be upside-down
-                const readableGlobal =
-                  globalTangent > 90 && globalTangent < 270 ? globalTangent - 180 : globalTangent;
-
-                // Convert back to LOCAL rotation (relative to the ring already rotated by `deg`)
-                const localRotate = readableGlobal - deg;   // ← use this for both text & icon
+                const deg = l.mid;                 // slice center (parent rotation)
+                const LOCAL_TANGENT_DEG = 90;      // parallel to rim, same for all slices
 
                 const iconType = (wedges[idx] as any)?.iconType;
                 const src = iconFor(iconType);
@@ -321,13 +311,14 @@ export default function Page() {
 
                 return (
                   <div key={idx} style={{ ...labelRing, transform: `rotate(${deg}deg)` }}>
-                    {/* TEXT: closer to rim */}
+                    {/* TEXT — closer to rim */}
                     <div
                       style={{
                         position: "absolute",
-                        top: `${OUTER_TEXT_TOP_PCT}%`,
+                        top: `${OUTER_TEXT_TOP_PCT}%`,   // smaller => closer to rim
                         left: "50%",
-                        transform: `translateX(-50%) rotate(${localRotate}deg)`,
+                        transform: `translateX(-50%) rotate(${LOCAL_TANGENT_DEG}deg)`,
+                        transformOrigin: "50% 50%",
                         pointerEvents: "none",
                       }}
                       title={labels[idx]?.text ?? "Hədiyyə"}
@@ -335,16 +326,17 @@ export default function Page() {
                       <span style={labelChipPreWrap}>{text}</span>
                     </div>
 
-                    {/* ICON: a bit more inward */}
+                    {/* ICON — further inside (under the text, toward hub) */}
                     {src && (
                       <img
                         src={src}
                         alt=""
                         style={{
                           position: "absolute",
-                          top: `${INNER_ICON_TOP_PCT}%`,
+                          top: `${INNER_ICON_TOP_PCT}%`,  // deeper toward center than text
                           left: "50%",
-                          transform: `translateX(-50%) rotate(${localRotate}deg)`,
+                          transform: `translateX(-50%) rotate(${LOCAL_TANGENT_DEG}deg)`,
+                          transformOrigin: "50% 50%",
                           width: 26,
                           height: 26,
                           objectFit: "contain",
@@ -356,6 +348,7 @@ export default function Page() {
                   </div>
                 );
               })}
+
             </div>
             <div style={logoHub}>
               <img
