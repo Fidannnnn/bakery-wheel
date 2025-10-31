@@ -303,7 +303,7 @@ export default function Page() {
               {/* labels/icons, attached to slices via full-size ring */}
               {labels.map((l, idx) => {
                 const deg = l.mid;             // slice center (0° = right, clockwise)
-                const tangent = deg - 90;      // line parallel to rim
+                const tangent = deg + 90;      // line parallel to rim
 
                 // keep text readable (never upside-down)
                 const norm = (x: number) => ((x % 360) + 360) % 360;
