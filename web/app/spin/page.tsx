@@ -301,8 +301,14 @@ export default function Page() {
 
               {/* labels/icons, attached to slices via full-size ring */}
               {labels.map((l, idx) => {
-                const deg = l.mid;              // slice centerline (0° = right, clockwise)
-                const tangent = deg - 90;       // makes baseline parallel to rim
+                const deg = l.mid;                 // slice center (0° = right, clockwise)
+                const tangent = deg - 90;          // baseline parallel to rim
+
+                // Keep text readable: constrain rotation to [-90°, +90°]
+                let readable = tangent;
+                const norm = (x: number) => ((x % 360) + 360) % 360;
+                const t = norm(tangent);
+                if (t > 90 && t < 270) readable = tangent - 180;   // flip 180° if upside-down
 
                 const iconType = (wedges[idx] as any)?.iconType;
                 const src = iconFor(iconType);
@@ -312,10 +318,9 @@ export default function Page() {
                     <div
                       style={{
                         ...labelAtTop,
-                        top: "7%",                       // closer to rim if you like
-                        transform: `translateX(-50%) rotate(${tangent}deg)`,  // ← TANGENT
+                        top: "5%",                                    // closer to edge (was 9%)
+                        transform: `translateX(-50%) rotate(${readable}deg)`,
                         display: "flex",
-                        flexDirection: "row",
                         alignItems: "center",
                         gap: 6,
                       }}
@@ -326,18 +331,24 @@ export default function Page() {
                           src={src}
                           alt=""
                           style={{
-                            width: 26,
-                            height: 26,
+                            width: 24,                                 // a bit smaller
+                            height: 24,
                             objectFit: "contain",
-                            // keep icon upright; remove this line if you want icon slanted too
-                            transform: `rotate(${-tangent}deg)`,              // ← upright icon
+                            // keep icon upright even when text flips:
+                            transform: `rotate(${-(readable)}deg)`,
                             pointerEvents: "none",
                             userSelect: "none",
                           }}
                         />
                       )}
-
-                      <span style={{ ...labelChip /* no counter-rotation here */ }}>
+                      <span
+                        style={{
+                          ...labelChip,
+                          fontSize: "clamp(10px, 1.3vw, 13px)",       // slightly smaller
+                          whiteSpace: "nowrap",
+                          maxWidth: "140px",
+                        }}
+                      >
                         {labels[idx]?.text ?? "Hədiyyə"}
                       </span>
                     </div>
