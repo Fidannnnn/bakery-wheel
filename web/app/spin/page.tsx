@@ -303,7 +303,7 @@ export default function Page() {
               {/* labels/icons, attached to slices via full-size ring */}
               {labels.map((l, idx) => {
                 const deg = l.mid;                 // slice center (parent rotation)
-                const LOCAL_TANGENT_DEG = 90;      // parallel to rim, same for all slices
+                const LOCAL_TANGENT_DEG = 180;      // parallel to rim, same for all slices
 
                 const iconType = (wedges[idx] as any)?.iconType;
                 const src = iconFor(iconType);
