@@ -301,32 +301,23 @@ export default function Page() {
 
               {/* labels/icons, attached to slices via full-size ring */}
               {labels.map((l, idx) => {
+                const deg = l.mid;              // slice centerline (0° = right, clockwise)
+                const tangent = deg - 90;       // makes baseline parallel to rim
+
                 const iconType = (wedges[idx] as any)?.iconType;
                 const src = iconFor(iconType);
 
-                // keep numbers small for smoother CSS
-                const wa = ((wheelAngle % 360) + 360) % 360;
-
                 return (
-                  <div
-                    key={idx}
-                    style={{
-                      ...labelRing,
-                      // rotate the ring so the anchor sits at the slice mid
-                      transform: `rotate(${l.mid}deg)`,
-                    }}
-                  >
+                  <div key={idx} style={{ ...labelRing, transform: `rotate(${deg}deg)` }}>
                     <div
                       style={{
                         ...labelAtTop,
-                        top: "12%",                           // how close to the rim (tweak 10–14)
-                        // counter-rotate by slice + wheel so text is always horizontal
-                        transform: `translateX(-50%) rotate(${-(l.mid + wa)}deg) translateY(${LABEL_SHIFT_PX}px)`,
+                        top: "7%",                       // closer to rim if you like
+                        transform: `translateX(-50%) rotate(${tangent}deg)`,  // ← TANGENT
                         display: "flex",
-                        flexDirection: "column",
+                        flexDirection: "row",
                         alignItems: "center",
                         gap: 6,
-                        willChange: "transform",
                       }}
                       title={labels[idx]?.text ?? "Hədiyyə"}
                     >
@@ -335,26 +326,24 @@ export default function Page() {
                           src={src}
                           alt=""
                           style={{
-                            width: ICON_SIZE,
-                            height: ICON_SIZE,
+                            width: 26,
+                            height: 26,
                             objectFit: "contain",
-                            filter: "drop-shadow(0 1px 1px rgba(0,0,0,.15))",
+                            // keep icon upright; remove this line if you want icon slanted too
+                            transform: `rotate(${-tangent}deg)`,              // ← upright icon
                             pointerEvents: "none",
                             userSelect: "none",
-                            // keep icon horizontal too
-                            transform: "rotate(0deg)",
                           }}
                         />
                       )}
-                      <span style={{ ...labelChip, whiteSpace: "pre-wrap" }}>
-                        {fitLabel(labels[idx]?.text ?? "Hədiyyə", 11)}
+
+                      <span style={{ ...labelChip /* no counter-rotation here */ }}>
+                        {labels[idx]?.text ?? "Hədiyyə"}
                       </span>
                     </div>
                   </div>
                 );
               })}
-
-
             </div>
             <div style={logoHub}>
               <img
