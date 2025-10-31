@@ -21,9 +21,9 @@ export default function Home() {
     <div style={wrap}>
       <main style={card}>
         <div style={{ display: "grid", gap: 14 }}>
-          <h1 style={title}>Hədiyyə Çarxı</h1>
+          <h1 style={title}>Çarxı fırlat!</h1>
           <p style={subtitle}>
-            Endirim və şirniyyat qazanmaq şansı üçün çarxı fırladın. Hər həftə bir dəfə fırlatmaq olar.
+            Endirim və şirniyyat qazanmaq şansı üçün çarxı fırladın.
           </p>
 
           <div style={{ marginTop: 8 }}>
