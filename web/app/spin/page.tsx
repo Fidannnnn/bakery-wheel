@@ -33,7 +33,7 @@ const POINTER_DEG = 180;
 
 const LABEL_TOP_PCT = 2.5;       // smaller = closer to edge
 const LABEL_SHIFT_PX = -5;      // outward nudge in pixels
-const OUTER_TEXT_TOP_PCT = 4;   // text radius (closer to rim)
+const OUTER_TEXT_TOP_PCT = 6;   // text radius (closer to rim)
 const INNER_ICON_TOP_PCT = 14;
 
 const ICONS: Record<string, string> = {
@@ -637,15 +637,18 @@ const labelChipPreWrap: React.CSSProperties = {
   fontWeight: 700,
   color: "#fff",
   fontSize: "clamp(10px, 1.2vw, 13px)",
-  lineHeight: 1.15,
-  whiteSpace: "pre-wrap",
+  lineHeight: 1.05,             // tighter spacing between lines
+  whiteSpace: "pre-wrap",       // keeps your wrapping
   textAlign: "center",
+  textShadow: "0 2px 4px rgba(0,0,0,.35)",
   maxWidth: 140,
-  padding: "0",                // no extra box
-  background: "none",          // remove dark capsule
-  border: "none",              // no border
-  textShadow: "0 2px 4px rgba(0,0,0,.35)", // keep a soft glow for readability
+  padding: "0",
+  background: "none",
+  border: "none",
+  display: "inline-block",
+  position: "relative",
 };
+
 
 
 
